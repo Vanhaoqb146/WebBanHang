@@ -24,11 +24,10 @@ namespace WebBanHang.Areas.Admin.Controllers
         {
             _context = context;
             _notyfService = notyfService;
-
         }
 
         // GET: Admin/SanPhams
-        public async Task<IActionResult> Index(int page = 1, int MaLoai = 0)
+        public async Task<IActionResult> Index(int page = 1, int MaLoai = 0, int? GiaTu = null, int? GiaDen = null)
         {
             var taikhoanID = HttpContext.Session.GetString("AdminId");
             if (string.IsNullOrEmpty(taikhoanID))
@@ -39,60 +38,91 @@ namespace WebBanHang.Areas.Admin.Controllers
             var pageNumber = page;
             var pageSize = 10;
 
-            List<SanPham> lsSanPham = new List<SanPham>();
+            // Debug: Kiểm tra giá trị tham số nhận được
+            System.Diagnostics.Debug.WriteLine($"Index - MaLoai: {MaLoai}, GiaTu: {GiaTu}, GiaDen: {GiaDen}");
 
-            //filter op
-            if(MaLoai != 0)
-            {
-                lsSanPham = _context.SanPhams
-                .AsNoTracking()
-                .Where(x=>x.MaLoai== MaLoai)
-                .Include(s => s.MaLoaiNavigation)
-                .Include(s => s.MaThNavigation)
-                .OrderByDescending(x => x.MaSp).ToList();
-            }
-            else
-            {
-                lsSanPham = _context.SanPhams
+            // Khởi tạo truy vấn với Include
+            var query = _context.SanPhams
                 .AsNoTracking()
                 .Include(s => s.MaLoaiNavigation)
                 .Include(s => s.MaThNavigation)
-                .OrderByDescending(x => x.MaSp).ToList();
+                .AsQueryable();
+
+            // Lọc theo loại sản phẩm nếu có
+            if (MaLoai > 0) // Chỉ lọc khi chọn một loại cụ thể
+            {
+                query = query.Where(x => x.MaLoai == MaLoai);
             }
 
-            //page
+            // Lọc theo khoảng giá (dựa trên GiaBan)
+            if (GiaTu.HasValue && GiaTu > 0)
+            {
+                query = query.Where(x => x.GiaBan.HasValue && x.GiaBan >= GiaTu.Value);
+            }
+
+            if (GiaDen.HasValue && GiaDen > 0)
+            {
+                query = query.Where(x => x.GiaBan.HasValue && x.GiaBan <= GiaDen.Value);
+            }
+
+            // Thực hiện truy vấn và sắp xếp
+            var lsSanPham = query.OrderByDescending(x => x.MaSp).ToList();
+
+            // Debug: Kiểm tra số lượng sản phẩm sau khi lọc
+            System.Diagnostics.Debug.WriteLine($"Số sản phẩm sau khi lọc: {lsSanPham.Count}");
+
+            // Phân trang
             PagedList<SanPham> models = new PagedList<SanPham>(lsSanPham.AsQueryable(), pageNumber, pageSize);
 
+            // Truyền giá trị bộ lọc hiện tại sang view
             ViewBag.CurrentPage = pageNumber;
             ViewBag.CurrentMaLoai = MaLoai;
+            ViewBag.CurrentGiaTu = GiaTu;
+            ViewBag.CurrentGiaDen = GiaDen;
 
-            //filter select
+            // Thêm thông báo nếu không có sản phẩm
+            if (!lsSanPham.Any())
+            {
+                ViewBag.Message = "Không tìm thấy sản phẩm nào thỏa mãn điều kiện lọc.";
+            }
+
+            // Tùy chọn lọc
             List<SelectListItem> lsQuantityStt = new List<SelectListItem>();
             lsQuantityStt.Add(new SelectListItem() { Text = "Còn hàng", Value = "1" });
             lsQuantityStt.Add(new SelectListItem() { Text = "Hết hàng", Value = "0" });
             ViewData["lsQuantityStt"] = lsQuantityStt;
 
-            //lấy slted value
             ViewData["LoaiSP"] = new SelectList(_context.LoaiSanPhams, "MaLoai", "TenLoai", MaLoai);
             ViewData["ThuongHieu"] = new SelectList(_context.ThuongHieus, "MaTh", "TenTh");
 
             return View(models);
         }
 
-        //
-        // Filter(int maLoai=0, int maTh=0, int stt=-1)
-        public IActionResult Filter(int MaLoai = 0, int Stt=-1)
+        // Filter
+        public IActionResult Filter(int MaLoai = 0, int? GiaTu = null, int? GiaDen = null)
         {
-            var url = $"/Admin/SanPhams?MaLoai={MaLoai}";
-            if (MaLoai == 0)
+            // Xây dựng URL với các tham số lọc
+            var url = "/Admin/SanPhams?page=1"; // Luôn bắt đầu từ trang 1 khi lọc
+
+            if (MaLoai > 0) // Chỉ thêm vào URL nếu có chọn loại sản phẩm
             {
-                url = $"/Admin/SanPhams";
+                url += $"&MaLoai={MaLoai}";
             }
-            else
+
+            if (GiaTu.HasValue && GiaTu > 0)
             {
-                //if(maLoai==0) url = $"/Admin/SanPhams?maTh={maTh}&stt={stt}";
+                url += $"&GiaTu={GiaTu.Value}";
             }
-            return Json(new { status = "success", RedirectUrl = url });
+
+            if (GiaDen.HasValue && GiaDen > 0)
+            {
+                url += $"&GiaDen={GiaDen.Value}";
+            }
+
+            // Debug: Kiểm tra URL được tạo
+            System.Diagnostics.Debug.WriteLine($"URL Redirect: {url}");
+
+            return Json(new { status = "success", redirectUrl = url });
         }
 
         // GET: Admin/SanPhams/Details/5
@@ -124,24 +154,22 @@ namespace WebBanHang.Areas.Admin.Controllers
         }
 
         // POST: Admin/SanPhams/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("MaSp,TenSp,GiaBan,GiaGiam,SoLuongCo,Anh,CongSuat,KhoiLuong,MoTa,BaoHanh,MaLoai,MaTh")] SanPham sanPham, Microsoft.AspNetCore.Http.IFormFile fAnh)
         {
             if (ModelState.IsValid)
             {
-                if(sanPham.GiaGiam >= sanPham.GiaBan)
+                if (sanPham.GiaGiam >= sanPham.GiaBan)
                 {
                     _notyfService.Warning("Giá giảm phải nhỏ hơn giá bán");
                     return View(sanPham);
                 }
                 sanPham.TenSp = Utilities.ToTitleCase(sanPham.TenSp);
-                if(fAnh != null)
+                if (fAnh != null)
                 {
                     string extension = Path.GetExtension(fAnh.FileName);
-                    string img = Utilities.SEOUrl(sanPham.TenSp)+"-"+ Utilities.RandomGuid() + extension;
+                    string img = Utilities.SEOUrl(sanPham.TenSp) + "-" + Utilities.RandomGuid() + extension;
                     sanPham.Anh = await Utilities.UploadFile(fAnh, @"sanpham", img.ToLower());
                 }
                 if (string.IsNullOrEmpty(sanPham.TenSp)) sanPham.Anh = "default.jpg";
@@ -175,8 +203,6 @@ namespace WebBanHang.Areas.Admin.Controllers
         }
 
         // POST: Admin/SanPhams/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("MaSp,TenSp,GiaBan,GiaGiam,SoLuongCo,Anh,CongSuat,KhoiLuong,MoTa,BaoHanh,MaLoai,MaTh")] SanPham sanPham, Microsoft.AspNetCore.Http.IFormFile fAnh)
@@ -259,7 +285,6 @@ namespace WebBanHang.Areas.Admin.Controllers
                 _notyfService.Warning("Xóa thất bại");
                 return RedirectToAction(nameof(Index));
             }
-            
         }
 
         private bool SanPhamExists(int id)

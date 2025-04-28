@@ -20,26 +20,37 @@
     <div class="card-body">
         <div class="row m-b-30">
             <div class="col-lg-8">
+                <!-- Hàng thứ nhất -->
                 <div class="d-md-flex">
                     <div class="m-b-10 m-r-15">
                         <select class="custom-select" style="min-width: 160px;" id="txtMaLoai" name="txtMaLoai" asp-items="ViewBag.LoaiSP">
-                            <option selected>-Chọn loại SP-</option>
                             <option value="0">Tất cả</option>
                         </select>
                     </div>
-                    @*<div class="m-b-10 m-r-15">
-                        <select class="custom-select" style="min-width: 170px;" id="txtStt" name="txtStt" asp-items="ViewBag.lsQuantityStt">
-                            <option selected>-Chọn trạng thái-</option>
-                            <option value="0">Tất cả</option>
-                        </select>
-                    </div>*@
-                    <div class="m-b-10 ">
-                        <div class="input-affix" style="min-width: 200px;">
+                    <!-- Ô nhập liệu khoảng giá -->
+                    <div class="m-b-10 m-r-15">
+                        <input type="number" class="form-control" id="giaTu" name="giaTu" placeholder="Giá từ" style="min-width: 100px;" value="@ViewBag.CurrentGiaTu" />
+                    </div>
+                    <div class="m-b-10 m-r-15">
+                        <input type="number" class="form-control" id="giaDen" name="giaDen" placeholder="Giá đến" style="min-width: 100px;" value="@ViewBag.CurrentGiaDen" />
+                    </div>
+                    <!-- Thêm nút Lọc -->
+                    <div class="m-b-10 m-r-15">
+                        <button class="btn btn-primary" id="btnLoc">Lọc</button>
+                    </div>
+                </div>
+
+                <!-- Hàng thứ hai - Thanh tìm kiếm có nút tìm kiếm -->
+                <div class="d-md-flex mt-2">
+                    <div class="m-b-10 m-r-15" style="flex-grow: 1;">
+                        <div class="input-affix">
                             <i class="prefix-icon anticon anticon-search opacity-04"></i>
                             <input id="searchKey" name="searchKey" type="text" class="form-control" placeholder="Tìm tên sản phẩm">
                         </div>
                     </div>
-
+                    <div class="m-b-10">
+                        <button class="btn btn-primary" id="btnSearch">Tìm kiếm</button>
+                    </div>
                 </div>
             </div>
             <div class="col-lg-4 text-right">
@@ -49,6 +60,7 @@
                 </a>
             </div>
         </div>
+
         <div class="table-responsive">
             <table class="table table-hover e-commerce-table">
                 <thead>
@@ -59,7 +71,6 @@
                         <th style="font-weight:bold">Giá bán</th>
                         <th style="font-weight:bold">Giảm giá</th>
                         <th style="font-weight:bold">Số lượng</th>
-
                         <th style="font-weight:bold">Loại</th>
                         <th style="font-weight:bold">Thương hiệu</th>
                         <th style="font-weight:bold">Trạng thái</th>
@@ -67,7 +78,7 @@
                     </tr>
                 </thead>
                 <tbody id="records_table">
-                    @if (Model != null)
+                    @if (Model != null && Model.Any())
                     {
                         foreach (var item in Model)
                         {
@@ -83,14 +94,11 @@
                                         <img class="img-fluid rounded" src="~/images/sanpham/@item.Anh" style="max-width: 60px" alt="img">
                                     </div>
                                 </td>
-
                                 <td>@item.GiaBan.Value.ToString("#,##0") đ</td>
                                 <td>@item.GiaGiam.Value.ToString("#,##0") đ</td>
                                 <td>@item.SoLuongCo</td>
                                 <td>@item.MaLoaiNavigation.TenLoai</td>
                                 <td>@item.MaThNavigation.TenTh</td>
-
-
                                 <td>
                                     @if (item.SoLuongCo > 0)
                                     {
@@ -106,83 +114,141 @@
                                             <div>Hết hàng</div>
                                         </div>
                                     }
-
                                 </td>
                                 <td class="text-right">
                                     <a class="btn btn-icon btn-hover btn-sm btn-rounded pull-right" asp-area="Admin" asp-controller="SanPhams" asp-action="Delete" asp-route-id="@item.MaSp">
                                         <i class="anticon anticon-delete"></i>
                                     </a>
-
                                     <a class="btn btn-icon btn-hover btn-sm btn-rounded" asp-area="Admin" asp-controller="SanPhams" asp-action="Edit" asp-route-id="@item.MaSp">
                                         <i class="anticon anticon-edit"></i>
                                     </a>
-
                                 </td>
                             </tr>
                         }
                     }
-
+                    else
+                    {
+                        <tr>
+                            <td colspan="10" class="text-center">
+                                @if (ViewBag.Message != null)
+                                {
+                                    <p>@ViewBag.Message</p>
+                                }
+                                else
+                                {
+                                    <p>Không có sản phẩm nào.</p>
+                                }
+                            </td>
+                        </tr>
+                    }
                 </tbody>
             </table>
 
             <div aria-label="Page navigation example">
                 <ul class="pagination">
-                    <pager class="pager-container" list="@Model" asp-area="Admin" asp-controller="SanPhams" asp-action="Index" asp-route-MaLoai="@ViewBag.CurrentMaLoai" />
+                    <pager class="pager-container" list="@Model" asp-area="Admin" asp-controller="SanPhams" asp-action="Index" asp-route-MaLoai="@ViewBag.CurrentMaLoai" asp-route-GiaTu="@ViewBag.CurrentGiaTu" asp-route-GiaDen="@ViewBag.CurrentGiaDen" />
                 </ul>
             </div>
         </div>
     </div>
 </div>
 
-@section Scripts{
+@section Scripts {
     <script>
-        $(document).ready(function(){
-            jQuery("#txtMaLoai").change(function () {
-                var ml = jQuery(this).children(":selected").attr("value");
-                ml = parseFloat(ml);
+                       $(document).ready(function(){
+            // Hàm xử lý lọc
+            function applyFilter() {
+                var maLoai = $("#txtMaLoai").val();
+                var giaTu = $("#giaTu").val();
+                var giaDen = $("#giaDen").val();
 
-                $('#txtMaLoai option')
-                    .removeAttr('selected');
-                $("#txtMaLoai > [value=" + ml + "]").attr("selected", "true");
+                // Debug: In giá trị ra console để kiểm tra
+                console.log("MaLoai:", maLoai);
+                console.log("GiaTu:", giaTu);
+                console.log("GiaDen:", giaDen);
+
+                // Kiểm tra hợp lệ
+                if (giaTu && giaDen && parseInt(giaTu) > parseInt(giaDen)) {
+                    alert("Giá 'Từ' phải nhỏ hơn hoặc bằng giá 'Đến'");
+                    return;
+                }
 
                 $.ajax({
                     url: '/Admin/SanPhams/Filter',
                     datatype: "json",
                     type: "GET",
-                    data:{
-                        MaLoai : ml,
+                    data: {
+                        MaLoai: maLoai ? parseInt(maLoai) : 0,
+                        GiaTu: giaTu ? parseInt(giaTu) : null,
+                        GiaDen: giaDen ? parseInt(giaDen) : null
                     },
                     async: true,
-                    success: function(results){
-                        if (results.status == "success") {
+                    success: function(results) {
+                        console.log("Kết quả từ Filter:", results);
+                        if (results.status === "success") {
                             window.location.href = results.redirectUrl;
+                        } else {
+                            alert("Lỗi: Không thể áp dụng bộ lọc");
                         }
                     },
-                    error: function(xhr){
-                        alert('error');
+                    error: function(xhr) {
+                        console.log("Lỗi AJAX:", xhr);
+                        alert('Lỗi khi gọi Filter');
                     }
                 });
+            }
+
+            // Hàm xử lý tìm kiếm
+            function searchProduct() {
+                var strSearchKey = $("#searchKey").val().trim();
+                if (strSearchKey !== "") {
+                    $.ajax({
+                        url: '/Admin/Search/TimSanPham/',
+                        datatype: "json",
+                        type: "POST",
+                        data: {
+                            searchKey: strSearchKey
+                        },
+                        async: true,
+                        success: function(results) {
+                            $('#records_table').html("");
+                            $('#records_table').html(results);
+                        },
+                        error: function(xhr) {
+                            console.log("Lỗi AJAX tìm kiếm:", xhr);
+                            alert('Lỗi khi tìm kiếm sản phẩm');
+                        }
+                    });
+                }
+            }
+
+            // Kích hoạt lọc khi nhấn nút Lọc
+            $("#btnLoc").click(function() {
+                applyFilter();
             });
 
-            $("#searchKey").keyup(function () {
-                var strSearchKey = $("#searchKey").val();
-                $.ajax({
-                    url: '/Admin/Search/TimSanPham/',
-                    datatype: "json",
-                    type: "POST",
-                    data: {
-                        searchKey: strSearchKey
-                    },
-                    async: true,
-                    success: function (results) {
-                        //$('#loader').hide();
-                        $('#records_table').html("");
-                        $('#records_table').html(results);
-                    },
-                    error: function (xhr) {
-                        alert('error');
-                    }
-                });
+            // Thêm sự kiện khi nhấn Enter trong ô nhập giá
+            $("#giaTu, #giaDen").keypress(function(e) {
+                if(e.which == 13) { // Kiểm tra nếu phím bấm là Enter
+                    applyFilter();
+                }
+            });
+
+            // Kích hoạt lọc khi thay đổi loại sản phẩm
+            $("#txtMaLoai").change(function() {
+                applyFilter();
+            });
+
+            // Kích hoạt tìm kiếm khi nhấn nút Tìm kiếm
+            $("#btnSearch").click(function() {
+                searchProduct();
+            });
+
+            // Thêm sự kiện khi nhấn Enter trong ô tìm kiếm
+            $("#searchKey").keypress(function(e) {
+                if(e.which == 13) { // Kiểm tra nếu phím bấm là Enter
+                    searchProduct();
+                }
             });
         });
     </script>
