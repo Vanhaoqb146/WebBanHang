@@ -1,0 +1,36 @@
+﻿@model IEnumerable<SanPham>
+@if (Model != null && Model.Any())
+{
+    <div class="product-item-wrap row">
+        @foreach (var item in Model)
+        {
+            <div class="col-xl-3 col-lg-4 col-sm-6 pt-6">
+                <div class="product-item">
+                    <div class="product-img img-zoom-effect">
+                        <a href="/sanpham/@item.MaSp">
+                            <img class="img-full" src="~/images/sanpham/@item.Anh" alt="Product Images">
+                        </a>
+                        <div class="product-add-action">
+                            <ul>
+                                <li>
+                                    <a href="javascript:void(0)" class="add-to-cart">
+                                        <i class="pe-7s-cart"></i>
+                                    </a>
+                                    <input type="hidden" class="product-id" value="@item.MaSp" />
+                                    <input type="hidden" class="product-quantity" value="1" />
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="product-content">
+                        <a style="display: block; height:72px" class="product-name" href="sanpham/@item.MaSp">@item.TenSp</a>
+                        <div class="price-box pb-1">
+                            <span class="old-price text-dark">@item.GiaBan.Value.ToString("#,##0") đ</span><br />
+                            <span class="new-price text-danger">@item.GiaGiam.Value.ToString("#,##0") đ</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

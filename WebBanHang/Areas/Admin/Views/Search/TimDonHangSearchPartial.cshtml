@@ -1,0 +1,23 @@
+﻿@model List<DonHang>
+
+@if (Model != null)
+{
+    foreach (var item in Model)
+    {
+        <tr>
+            <td>#@item.MaDh</td>
+            <td>@item.MaKh</td>
+
+            <td>@item.NgayDat</td>
+            <td>@item.NgayShip</td>
+            <td>@item.TongTien.Value.ToString("#,##0") đ</td>
+            <td>@item.MaTtNavigation.TenTt</td>
+            <td class="text-right">
+                <a class="btn btn-icon btn-hover btn-sm btn-rounded" asp-area="Admin" asp-controller="DonHangs" asp-action="ChangeStatus" asp-route-id="@item.MaDh">
+                    <i class="anticon anticon-edit"></i>
+                </a>
+
+            </td>
+        </tr>
+    }
+}

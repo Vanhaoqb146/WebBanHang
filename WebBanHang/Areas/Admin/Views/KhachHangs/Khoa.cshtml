@@ -1,0 +1,65 @@
+﻿@model WebBanHang.Models.KhachHang
+
+@{
+    ViewData["Title"] = "Khóa khách hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+<div class="page-header">
+    <h2 class="header-title">Quản lý khách hàng</h2>
+    <div class="header-sub-title">
+        <nav class="breadcrumb breadcrumb-dash">
+            <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="breadcrumb-item"><i class="anticon anticon-home m-r-5"></i>Home</a>
+            <a asp-area="Admin" asp-controller="KhachHangs" asp-action="Index" class="breadcrumb-item">Khách hàng</a>
+            <span class="breadcrumb-item active">Khóa khách hàng</span>
+        </nav>
+    </div>
+</div>
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Khóa khách hàng</h4>
+        <form asp-action="Khoa" asp-route-id="@Model.MaKh" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="MaKh" />
+
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">ID</label>
+                <div class="col-sm-2">
+                    <input style="background-color:#F7F9F9;" type="text" readonly class="form-control" asp-for="MaKh" placeholder="ID">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Tên</label>
+                <div class="col-sm-2">
+                    <input style="background-color:#F7F9F9;" type="text" readonly class="form-control" asp-for="TenKh" placeholder="Tên">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Email</label>
+                <div class="col-sm-3">
+                    <input style="background-color:#F7F9F9;" type="text" readonly class="form-control" asp-for="Email" placeholder="Email">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">SĐT</label>
+                <div class="col-sm-3">
+                    <input style="background-color:#F7F9F9;" type="text" readonly class="form-control" asp-for="Sdt" placeholder="SĐT">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Địa chỉ</label>
+                <div class="col-sm-7">
+                    <input style="background-color:#F7F9F9;" type="text" readonly class="form-control" value="@ViewBag.FullAddress" placeholder="Địa chỉ">
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Bạn có chắc muốn khóa?</label>
+                <div class="col-sm-5">
+                    <button type="submit" class="btn btn-danger">Khóa</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+

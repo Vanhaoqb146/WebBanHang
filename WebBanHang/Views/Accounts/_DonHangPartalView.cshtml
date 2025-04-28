@@ -1,0 +1,37 @@
+﻿@model List<DonHang>
+@if(Model!=null && Model.Count > 0)
+{
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <tbody>
+                <tr>
+                    <th>Mã đơn hàng</th>
+                    <th>Ngày đặt</th>
+                    <th>Ngày ship</th>
+                    <th>Trạng thái</th>
+                    <th>Tổng tiền</th>
+                    <th></th>
+                </tr>
+                @foreach(var item in Model)
+                {
+                    <tr>
+                        <td><a class="account-order-id" href="javascript:void(0)">#@item.MaDh</a></td>
+                        <td>@item.NgayDat</td>
+                        <td>@item.NgayShip</td>
+                        <td>@item.MaTtNavigation.TenTt</td>
+                        <td>@item.TongTien</td>
+                        <td>
+                            <a href="javascript:void(0)" class="btn btn-secondary btn-primary-hover"><span>View</span></a>
+                        </td>
+                    </tr>
+                }
+                
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <p>Chưa có đơn hàng!</p>
+}
+

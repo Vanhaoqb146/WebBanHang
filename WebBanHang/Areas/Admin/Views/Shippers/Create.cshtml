@@ -1,0 +1,76 @@
+﻿@model WebBanHang.Models.Shipper
+
+@{
+    ViewData["Title"] = "Tạo mới shipper";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="page-header">
+    <h2 class="header-title">Quản lý shipper</h2>
+    <div class="header-sub-title">
+        <nav class="breadcrumb breadcrumb-dash">
+            <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="breadcrumb-item"><i class="anticon anticon-home m-r-5"></i>Home</a>
+            <a asp-area="Admin" asp-controller="Shippers" asp-action="Index" class="breadcrumb-item">Shipper</a>
+            <span class="breadcrumb-item active">Tạo mới shipper</span>
+        </nav>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Tạo mới shipper</h4>
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Tên</label>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control" asp-for="TenShipper" placeholder="Tên">
+                    <span asp-validation-for="TenShipper" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Email</label>
+                <div class="col-sm-3">
+                    <input type="email" class="form-control" asp-for="Email" placeholder="Email">
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">SĐT</label>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control" asp-for="Sdt" placeholder="SĐT">
+                    <span asp-validation-for="Sdt" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Mật khẩu</label>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control" asp-for="MatKhau" placeholder="Mật khẩu">
+                    <span asp-validation-for="MatKhau" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Loại xe</label>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control" asp-for="MatKhau" placeholder="Loại xe">
+                    <span asp-validation-for="LoaiXe" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Biển số</label>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control" asp-for="MatKhau" placeholder="Biển số">
+                    <span asp-validation-for="BienSo" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-sm-5">
+                    <button type="submit" class="btn btn-primary">Thêm</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+

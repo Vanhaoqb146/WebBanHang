@@ -1,0 +1,51 @@
+﻿@model WebBanHang.ModelViews.LoginViewModel
+
+@{
+    ViewData["Title"] = "Đăng nhập";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<main class="main-content">
+    <div class="breadcrumb-area breadcrumb-height" style="height:150px;background-color:#E3F0E1">
+        <div class="container h-100">
+            <div class="row h-100">
+                <div class="col-lg-12">
+                    <div class="breadcrumb-item">
+                        <h2 style="font-family:Verdana" class="breadcrumb-heading">Đăng nhập</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="login-register-area section-space-y-axis-100">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 offset-3 pt-10 pt-lg-0">
+                    <form asp-action="DangNhap">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="login-form">
+                            <h4 style="font-family:Verdana" class="login-title">Đăng nhập</h4>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <label>Email*</label>
+                                    <input asp-for="UserName" type="email" placeholder="Email">
+                                    <span asp-validation-for="UserName" class="text-danger"></span>
+                                </div>
+                                <div class="col-lg-12">
+                                    <label>Mật khẩu*</label>
+                                    <input asp-for="Password" type="password" placeholder="Password">
+                                    <span asp-validation-for="Password" class="text-danger"></span>
+                                </div>
+                                <div class="col-lg-9 pt-5">
+                                    <button class="btn btn-custom-size lg-size btn-secondary btn-primary-hover rounded-0">Login</button>
+                                </div>
+                                <div class="col-lg-3 pt-7">
+                                    <a href="/dangky">Đăng ký?</a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

@@ -1,0 +1,19 @@
+﻿@model List<LoaiSanPham>
+
+<div class="widgets-area mb-9">
+    <h2 class="widgets-title mb-5">Danh mục</h2>
+    <div class="widgets-item">
+        <ul class="widgets-category">
+            @foreach (var item in Model)
+            {
+                <li>
+                    <a href="/sanphams/@item.MaLoai">
+                        @item.TenLoai
+                        <span></span>
+                    </a>
+                </li>
+            }
+
+        </ul>
+    </div>
+</div>

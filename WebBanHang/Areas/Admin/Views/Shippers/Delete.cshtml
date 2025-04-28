@@ -1,0 +1,69 @@
+﻿@model WebBanHang.Models.Shipper
+
+@{
+    ViewData["Title"] = "Khóa";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="page-header">
+    <h2 class="header-title">Quản lý shipper</h2>
+    <div class="header-sub-title">
+        <nav class="breadcrumb breadcrumb-dash">
+            <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="breadcrumb-item"><i class="anticon anticon-home m-r-5"></i>Home</a>
+            <a asp-area="Admin" asp-controller="Shippers" asp-action="Index" class="breadcrumb-item">Shipper</a>
+            <span class="breadcrumb-item active">Khóa shipper</span>
+        </nav>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Khóa shipper</h4>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">ID</label>
+            <div class="col-sm-2">
+                <input style="background-color:#F7F9F9;" type="text" readonly class="form-control" asp-for="MaShipper" placeholder="ID">
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Tên </label>
+            <div class="col-sm-4">
+                <input style="background-color:#F7F9F9;" type="text" class="form-control" readonly asp-for="TenShipper" placeholder="Tên shipper">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Email </label>
+            <div class="col-sm-3">
+                <input style="background-color:#F7F9F9;" type="text" class="form-control" readonly asp-for="Email" placeholder="Email">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">SĐT </label>
+            <div class="col-sm-3">
+                <input style="background-color:#F7F9F9;" type="text" class="form-control" readonly asp-for="Sdt" placeholder="SĐT">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Loại xe </label>
+            <div class="col-sm-3">
+                <input style="background-color:#F7F9F9;" type="text" class="form-control" readonly asp-for="LoaiXe" placeholder="Loại xe">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Biển số </label>
+            <div class="col-sm-3">
+                <input style="background-color:#F7F9F9;" type="text" class="form-control" readonly asp-for="BienSo" placeholder="Biển số">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Bạn có chắc muốn khóa?</label>
+            <div class="col-sm-3">
+                <form asp-area="Admin" asp-action="Delete" asp-route-id="@Model.MaShipper">
+                    <input type="hidden" asp-for="MaShipper" />
+                    <input type="submit" value="Xác nhận khóa" class="btn btn-danger" />
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

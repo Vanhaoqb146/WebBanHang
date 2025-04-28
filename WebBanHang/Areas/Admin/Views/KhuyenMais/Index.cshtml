@@ -1,0 +1,71 @@
+﻿@model IEnumerable<WebBanHang.Models.KhuyenMai>
+
+@{
+    ViewData["Title"] = "Voucher khuyến mại";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="page-header">
+    <h2 class="header-title">Quản lý khuyến mại</h2>
+    <div class="header-sub-title">
+        <nav class="breadcrumb breadcrumb-dash">
+            <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="breadcrumb-item"><i class="anticon anticon-home m-r-5"></i>Home</a>
+            <span class="breadcrumb-item active">Danh sách khuyến mại</span>
+        </nav>
+    </div>
+</div>
+
+
+<div class="card">
+    <div class="card-body">
+        <div class="row m-b-30">
+            <div class="col-lg-4">
+                <a class="btn btn-primary" asp-area="Admin" asp-controller="KhuyenMais" asp-action="Create">
+                    <i class="anticon anticon-plus-circle m-r-5"></i>
+                    <span>Thêm mới</span>
+                </a>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover e-commerce-table">
+                <thead>
+                    <tr>
+                        <th style="font-weight:bold">Mã nhập</th>
+                        <th style="font-weight:bold">Số lượng</th>
+
+                        <th style="font-weight:bold">Giá trị giảm</th>
+                        <th style="font-weight:bold">Giá trị tối thiểu</th>
+                        <th style="font-weight:bold">Ngày bắt đầu</th>
+                        <th style="font-weight:bold">Ngày kết thúc</th>
+                        <th style="font-weight:bold">#</th>
+                    </tr>
+                </thead>
+                <tbody id="records_table">
+                    @if (Model != null)
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td style="font-weight:bold">@item.MaNhap</td>
+                                <td>@item.SoLuong</td>
+                                <td>@item.GiaTriGiam.Value.ToString("#,##0") đ</td>
+                                <td>@item.GiaTriToiThieu.Value.ToString("#,##0") đ</td>
+                                <td>@item.NgayBatDau</td>
+                                <td>@item.NgayKetThuc</td>
+                                <td>
+                                    <a class="btn btn-icon btn-hover btn-sm btn-rounded" asp-area="Admin" asp-controller="KhuyenMais" asp-action="Edit" asp-route-id="@item.MaKm">
+                                        <i class="anticon anticon-edit"></i>
+                                    </a>
+                                    <a class="btn btn-icon btn-hover btn-sm btn-rounded" asp-area="Admin" asp-controller="KhuyenMais" asp-action="Delete" asp-route-id="@item.MaKm">
+                                        <i class="anticon anticon-delete"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,558 @@
+﻿@model WebBanHang.Models.SanPham
+
+@{
+    ViewData["Title"] = Model.TenSp;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<SanPham> lsSP = ViewBag.SanPham;
+    List<DanhGiaSanPham> lsDG = ViewBag.DanhGia;
+}
+<style>
+    .rating {
+        display: inline-block;
+        position: relative;
+        height: 50px;
+        line-height: 50px;
+        font-size: 50px;
+    }
+
+        .rating label {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            cursor: pointer;
+        }
+
+            .rating label:last-child {
+                position: static;
+            }
+
+            .rating label:nth-child(1) {
+                z-index: 5;
+            }
+
+            .rating label:nth-child(2) {
+                z-index: 4;
+            }
+
+            .rating label:nth-child(3) {
+                z-index: 3;
+            }
+
+            .rating label:nth-child(4) {
+                z-index: 2;
+            }
+
+            .rating label:nth-child(5) {
+                z-index: 1;
+            }
+
+            .rating label input {
+                position: absolute;
+                top: 0;
+                left: 0;
+                opacity: 0;
+            }
+
+            .rating label .icon {
+                float: left;
+                color: transparent;
+            }
+
+            .rating label:last-child .icon {
+                color: #000;
+            }
+
+        .rating:not(:hover) label input:checked ~ .icon,
+        .rating:hover label:hover input ~ .icon {
+            color: #4099a1;
+        }
+
+        .rating label input:focus:not(:checked) ~ .icon:last-child {
+            color: #000;
+            text-shadow: 0 0 5px #4099a1;
+        }
+</style>
+
+
+<!-- Begin Main Content Area  -->
+<main class="main-content">
+    <div class="single-product-area section-space-top-100">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="single-product-img h-100">
+                        <div class="swiper-container single-product-slider">
+                            <div class="swiper-wrapper">
+                                <div class="swiper-slide">
+                                    <a href="~/images/sanpham/@Model.Anh" class="single-img gallery-popup">
+                                        <img class="img-full" src="~/images/sanpham/@Model.Anh" alt="Product Image">
+                                    </a>
+                                </div>
+                                <div class="swiper-slide">
+                                    <a href="~/images/sanpham/@Model.Anh" class="single-img gallery-popup">
+                                        <img class="img-full" src="~/images/sanpham/@Model.Anh" alt="Product Image">
+                                    </a>
+                                </div>
+                            </div>
+                            <!-- Add Pagination -->
+                            <div class="swiper-pagination"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="product-thumb-with-content row">
+                        <div class="col-12 order-lg-1 order-2 pt-10 pt-lg-0">
+                            <div class="single-product-content">
+                                <h2 class="title" style="font-family:Verdana">@Model.TenSp</h2>
+                                <br />
+                                <div class="price-box pb-1">
+                                    <span class="new-price text-danger" style="font-weight: bold; font-size: 20px"> @Model.GiaGiam.Value.ToString("#,##0") đ</span>
+                                    <span class="old-price text-dark" style="font-size: 20px">@Model.GiaBan.Value.ToString("#,##0") đ</span>
+                                </div>
+                                <br />
+                                <p class="short-desc mb-6">
+                                   @*  Công suất: @Model.CongSuat (W)
+                                    <br />
+                                    Khối lượng: @Model.KhoiLuong (Kg)
+                                    <br /> *@
+                                    Thương hiệu: @Model.MaThNavigation.TenTh
+                                    <br />
+                                    Bảo hành: @Model.BaoHanh (tháng)
+                                </p>
+                                @{
+                                    if (Model.SoLuongCo > 0)
+                                    {
+                                        <p class="short-desc mb-6">
+                                            Tình trạng: Còn hàng
+                                        </p>
+                                    }
+                                    else
+                                    {
+                                        <p class="short-desc mb-6">
+                                            Tình trạng: Hết hàng
+                                        </p>
+                                    }
+                                }
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <div class="input-group">
+                                            <span class="input-group-btn">
+                                                <button style="border: 1px solid #4099a1;height:50px" type="button" class="btn btn-default btn-number" disabled="disabled" data-type="minus" data-field="txtsoLuong">
+                                                    <i class="fa fa-minus"></i>
+                                                </button>
+                                            </span>
+
+                                            <input style="border: 1px solid #4099a1;height:50px;text-align:center" type="text" id="txtsoLuong" name="txtsoLuong" class="form-control input-number" min="1" max="@Model.SoLuongCo" value="1">
+
+                                            <span class="input-group-btn">
+                                                <button style="border: 1px solid #4099a1;height:50px" type="button" class="btn btn-default btn-number" data-type="plus" data-field="txtsoLuong">
+                                                    <i class="fa fa-plus"></i>
+                                                </button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    @if (Model.SoLuongCo > 0)
+                                    {
+                                        <div class="col-sm-3 add-to-cart">
+                                            <a class="btn btn-custom-size lg-size btn-primary btn-secondary-hover rounded-0" href="javascript:void(0)">Thêm vào giỏ</a>
+                                            <input hidden asp-for="MaSp" />
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-sm-3">
+                                            <a class="btn btn-custom-size lg-size btn-primary btn-secondary-hover rounded-0" href="javascript:void(0)">HẾT HÀNG</a>
+                                            <input hidden asp-for="MaSp" />
+                                        </div>
+                                    }
+
+                                </div>
+                                <br />
+                                <div class="product-category text-matterhorn pb-2">
+                                    <span class="title">Danh mục :</span>
+                                    <ul>
+                                        <li>
+                                            <a href="/sanphams/@Model.MaLoai">@Model.MaLoaiNavigation.TenLoai</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 order-lg-2 order-1 pt-10 pt-lg-0">
+                            <div class="swiper-container single-product-thumbs">
+                                <div class="swiper-wrapper">
+                                    <a href="javascript:void(0)" class="swiper-slide">
+                                        <img class="img-full" src="~/images/sanpham/@Model.Anh" alt="Product Thumnail">
+                                    </a>
+                                    <a href="javascript:void(0)" class="swiper-slide">
+                                        <img class="img-full" src="~/images/sanpham/@Model.Anh" alt="Product Thumnail">
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="product-tab-area section-space-top-100">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <ul class="nav product-tab-nav product-tab-style-2" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <a class="active btn btn-custom-size" id="description-tab" data-bs-toggle="tab" href="#description" role="tab" aria-controls="description" aria-selected="true">
+                                Mô tả
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="tab-content product-tab-content">
+                        <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">
+                            <div class="product-description-body">
+                                <span style="white-space: pre-line">@Model.MoTa</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="product-tab-area section-space-top-100">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <ul class="nav product-tab-nav product-tab-style-2" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <a class=" active btn btn-custom-size" id="reviews-tab" data-bs-toggle="tab" href="#reviews" role="tab" aria-controls="reviews" aria-selected="true">
+                                Đánh giá
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="tab-content product-tab-content">
+                        <div class="tab-pane fade show active" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
+                            <div class="product-review-body">
+                                <ul class="user-info-wrap">
+                                    @if (lsDG.Count != 0)
+                                    {
+                                        foreach (var item in lsDG)
+                                        {
+                                            <li>
+                                                <ul class="user-info">
+                                                    <li class="user-comment">
+                                                        <div class="rating-box">
+                                                            @if (item.Diem == 0)
+                                                            {
+                                                                <ul>
+                                                                    <li><i class="fa fa-star-o"></i></li>
+                                                                    <li><i class="fa fa-star-o"></i></li>
+                                                                    <li><i class="fa fa-star-o"></i></li>
+                                                                    <li><i class="fa fa-star-o"></i></li>
+                                                                    <li><i class="fa fa-star-o"></i></li>
+                                                                </ul>
+                                                            }
+                                                            else if (item.Diem == 1)
+                                                            {
+                                                                <ul>
+                                                                    <li><i class="fa fa-solid fa-star"></i></li>
+                                                                    <li><i class="fa fa-star-o"></i></li>
+                                                                    <li><i class="fa fa-star-o"></i></li>
+                                                                    <li><i class="fa fa-star-o"></i></li>
+                                                                    <li><i class="fa fa-star-o"></i></li>
+                                                                </ul>
+                                                            }
+                                                            else if (item.Diem == 2)
+                                                            {
+                                                                <ul>
+                                                                    <li><i class="fa fa-solid fa-star"></i></li>
+                                                                    <li><i class="fa fa-solid fa-star"></i></li>
+                                                                    <li><i class="fa fa-star-o"></i></li>
+                                                                    <li><i class="fa fa-star-o"></i></li>
+                                                                    <li><i class="fa fa-star-o"></i></li>
+                                                                </ul>
+                                                            }
+                                                            else if (item.Diem == 3)
+                                                            {
+                                                                <ul>
+                                                                    <li><i class="fa fa-solid fa-star"></i></li>
+                                                                    <li><i class="fa fa-solid fa-star"></i></li>
+                                                                    <li><i class="fa fa-solid fa-star"></i></li>
+                                                                    <li><i class="fa fa-star-o"></i></li>
+                                                                    <li><i class="fa fa-star-o"></i></li>
+                                                                </ul>
+                                                            }
+                                                            else if (item.Diem == 4)
+                                                            {
+                                                                <ul>
+                                                                    <li><i class="fa fa-solid fa-star"></i></li>
+                                                                    <li><i class="fa fa-solid fa-star"></i></li>
+                                                                    <li><i class="fa fa-solid fa-star"></i></li>
+                                                                    <li><i class="fa fa-solid fa-star"></i></li>
+                                                                    <li><i class="fa fa-star-o"></i></li>
+                                                                </ul>
+                                                            }
+                                                            else
+                                                            {
+                                                                <ul>
+                                                                    <li><i class="fa fa-solid fa-star"></i></li>
+                                                                    <li><i class="fa fa-solid fa-star"></i></li>
+                                                                    <li><i class="fa fa-solid fa-star"></i></li>
+                                                                    <li><i class="fa fa-solid fa-star"></i></li>
+                                                                    <li><i class="fa fa-solid fa-star"></i></li>
+                                                                </ul>
+                                                            }
+
+                                                        </div>
+                                                        <div class="meta">
+                                                            <span><strong>@item.MaKhNavigation.TenKh -</strong> @item.ThoiGian</span>
+                                                        </div>
+                                                        <p class="short-desc mb-0">
+                                                            “@item.NoiDung“
+                                                        </p>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <p>Chưa có đánh giá</p>
+                                    }
+
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="button-wrap mt-8" style="text-align:center">
+        <button type="button" value="Viết đánh giá" class="btn btn-custom-size lg-size btn-secondary btn-primary-hover btn-lg rounded-0" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="mdo">Viết đánh giá</button>
+    </div>
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 style="font-family:Verdana" class="modal-title" id="exampleModalLabel">Đánh giá sản phẩm</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+               
+                <div class="modal-body">
+                    <form id="danhgia" method="post" action="/sanpham/danhgia">
+                        <input hidden id="id" name="id" value="@Model.MaSp" type="text">
+                        <div>
+                            <label for="recipient-name" class="col-form-label">Đánh giá</label>
+                        </div>
+                        <div class="rating">
+                            <label>
+                                <input type="radio" name="diem" value="1" />
+                                <span class="icon">★</span>
+                            </label>
+                            <label>
+                                <input type="radio" name="diem" value="2" />
+                                <span class="icon">★</span>
+                                <span class="icon">★</span>
+                            </label>
+                            <label>
+                                <input type="radio" name="diem" value="3" />
+                                <span class="icon">★</span>
+                                <span class="icon">★</span>
+                                <span class="icon">★</span>
+                            </label>
+                            <label>
+                                <input type="radio" name="diem" value="4" />
+                                <span class="icon">★</span>
+                                <span class="icon">★</span>
+                                <span class="icon">★</span>
+                                <span class="icon">★</span>
+                            </label>
+                            <label>
+                                <input type="radio" name="diem" value="5" checked />
+                                <span class="icon">★</span>
+                                <span class="icon">★</span>
+                                <span class="icon">★</span>
+                                <span class="icon">★</span>
+                                <span class="icon">★</span>
+                            </label>
+                        </div>
+                        <div class="mb-3">
+                            <label for="noiDung" class="col-form-label">Bình luận</label>
+                            <textarea required rows="5" class="form-control" id="noiDung" name="noiDung"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button form="danhgia" type="submit" class="btn btn-primary">Viết đánh giá</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="product-slider-area section-space-top-95 section-space-bottom-100">
+        <div class="container">
+            <div class="section-title text-center pb-55">
+                <span class="sub-title text-primary">Có thể bạn quan tâm</span>
+                <h4 style="font-family:Verdana">Sản phẩm tương tự</h4>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="swiper-slider-holder swiper-arrow">
+                        <div class="swiper-container product-slider border-issue">
+                            <div class="swiper-wrapper">
+                                @if (lsSP != null)
+                                {
+                                    foreach (var item in lsSP)
+                                    {
+                                        <div class="swiper-slide">
+                                            <div class="product-item">
+                                                <div class="product-img img-zoom-effect">
+                                                    <a href="/sanpham/@item.MaSp">
+                                                        <img class="img-full" src="~/images/sanpham/@item.Anh" alt="Product Images">
+                                                    </a>
+                                                    <div class="product-add-action">
+                                                        <ul>
+                                                            <li class="add-to-cart">
+                                                                <a href="javascript:void(0)">
+                                                                    <i class="pe-7s-cart"></i>
+                                                                </a>
+                                                                <input hidden class="maSp" name="maSp" value="@item.MaSp" />
+                                                            </li>
+                                                            <li class="quantity">
+                                                                <div>
+                                                                    <input hidden class="txtsoLuong" name="txtsoLuong" class="cart-plus-minus-box" value="1" type="text">
+                                                                </div>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div class="product-content texx">
+                                                    <a style="display: block; height:72px" class="product-name" href="/sanpham/@item.MaSp">@item.TenSp</a>
+                                                    <div class="price-box pb-1">
+                                                        <span class="old-price text-dark">@item.GiaBan.Value.ToString("#,##0") đ</span>
+                                                        <span class="new-price text-danger">@item.GiaGiam.Value.ToString("#,##0") đ</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <!-- Add Arrows -->
+                        <div class="swiper-button-next"></div>
+                        <div class="swiper-button-prev"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<!-- Main Content Area End Here  -->
+@section Scripts{
+    <script>
+                $(document).ready(function () {
+            $(function () {
+                function loadHeaderCart() {
+                    $("#miniCart").load("/AjaxContent/HeaderCart");
+                    $("#numberCart").load("/AjaxContent/NumberCart");
+                }
+                $(".add-to-cart").click(function () {
+                    var productid = $(this).find('.maSp').val() || $('#MaSp').val(); // Lấy từ class .maSp hoặc id #MaSp
+                    var soLuong = $(this).closest('.product-add-action').find('.txtsoLuong').val() || $('#txtsoLuong').val(); // Lấy từ class .txtsoLuong hoặc id #txtsoLuong
+
+                    $.ajax({
+                        url: '/api/cart/add',
+                        datatype: "json",
+                        type: "POST",
+                        data: {
+                            productID: productid,
+                            amount: soLuong
+                        },
+                        success: function (response) {
+                            loadHeaderCart();
+                            alert("Sản phẩm đã được thêm vào giỏ hàng!");
+                            location.reload();
+                        },
+                        error: function (error) {
+                            alert("Lỗi truyền data: " + error.responseText);
+                        }
+                    });
+                });
+            });
+
+            // Validate quantity
+            $('.btn-number').click(function (e) {
+                e.preventDefault();
+
+                fieldName = $(this).attr('data-field');
+                type = $(this).attr('data-type');
+                var input = $("input[name='" + fieldName + "']");
+                var currentVal = parseInt(input.val());
+                if (!isNaN(currentVal)) {
+                    if (type == 'minus') {
+                        if (currentVal > input.attr('min')) {
+                            input.val(currentVal - 1).change();
+                        }
+                        if (parseInt(input.val()) == input.attr('min')) {
+                            $(this).attr('disabled', true);
+                        }
+                    } else if (type == 'plus') {
+                        if (currentVal < input.attr('max')) {
+                            input.val(currentVal + 1).change();
+                        }
+                        if (parseInt(input.val()) == input.attr('max')) {
+                            $(this).attr('disabled', true);
+                        }
+                    }
+                } else {
+                    input.val(0);
+                }
+            });
+
+            $('.input-number').focusin(function () {
+                $(this).data('oldValue', $(this).val());
+            });
+
+            $('.input-number').change(function () {
+                minValue = parseInt($(this).attr('min'));
+                maxValue = parseInt($(this).attr('max'));
+                valueCurrent = parseInt($(this).val());
+
+                name = $(this).attr('name');
+                if (valueCurrent >= minValue) {
+                    $(".btn-number[data-type='minus'][data-field='" + name + "']").removeAttr('disabled');
+                } else {
+                    alert('Dưới số lượng tối thiểu');
+                    $(this).val($(this).data('oldValue'));
+                }
+                if (valueCurrent <= maxValue) {
+                    $(".btn-number[data-type='plus'][data-field='" + name + "']").removeAttr('disabled');
+                } else {
+                    alert('Vượt quá số lượng có');
+                    $(this).val($(this).data('oldValue'));
+                }
+            });
+
+            $(".input-number").keydown(function (e) {
+                // Allow: backspace, delete, tab, escape, enter and .
+                if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 190]) !== -1 ||
+                    // Allow: Ctrl+A
+                    (e.keyCode == 65 && e.ctrlKey === true) ||
+                    // Allow: home, end, left, right
+                    (e.keyCode >= 35 && e.keyCode <= 39)) {
+                    // let it happen, don't do anything
+                    return;
+                }
+                // Ensure that it is a number and stop the keypress
+                if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+}

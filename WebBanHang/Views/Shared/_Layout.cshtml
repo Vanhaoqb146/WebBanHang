@@ -1,0 +1,95 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>PERFECT HOME</title>
+    <meta name="robots" content="noindex, follow" />
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="~/images/logo.jpg" />
+
+    <!-- CSS
+    ============================================ -->
+
+    <!-- Vendor CSS (Contain Bootstrap, Icon Fonts) -->
+    <link rel="stylesheet" href="~/mainassets/css/vendor/font-awesome.min.css" />
+    <link rel="stylesheet" href="~/mainassets/css/vendor/Pe-icon-7-stroke.css" />
+
+    <!-- Plugin CSS (Global Plugins Files) -->
+    <link rel="stylesheet" href="~/mainassets/css/plugins/animate.min.css">
+    <link rel="stylesheet" href="~/mainassets/css/plugins/jquery-ui.min.css">
+    <link rel="stylesheet" href="~/mainassets/css/plugins/swiper-bundle.min.css">
+    <link rel="stylesheet" href="~/mainassets/css/plugins/nice-select.css">
+    <link rel="stylesheet" href="~/mainassets/css/plugins/magnific-popup.min.css" />
+
+    <!-- Style CSS -->
+    <link rel="stylesheet" href="~/mainassets/css/style.css">
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/dropdown-style.css" />
+   
+
+    <style>
+        * {
+            font-family: Verdana, Calibri, Arial, Helvetica, sans-serif;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="main-wrapper">
+
+        <!-- Begin Main Header Area -->
+        @await Html.PartialAsync("_HeaderPartialView.cshtml")
+
+
+        <!-- Main Header Area End Here -->
+
+        @RenderBody()
+
+        <!-- Begin Footer Area -->
+        @await Html.PartialAsync("_FooterPartialView.cshtml")
+        <!-- Footer Area End Here -->
+
+        <!-- Begin Scroll To Top -->
+        <a class="scroll-to-top" href="">
+            <i class="fa fa-chevron-up"></i>
+        </a>
+        <!-- Scroll To Top End Here -->
+
+    </div>
+
+    <!-- Global Vendor, plugins JS -->
+
+    <!-- JS Files
+    ============================================ -->
+    <!-- Global Vendor, plugins JS -->
+
+    <!-- Vendor JS -->
+    <script src="~/mainassets/js/vendor/bootstrap.bundle.min.js"></script>
+    <script src="~/mainassets/js/vendor/jquery-3.5.1.min.js"></script>
+    <script src="~/mainassets/js/vendor/jquery-migrate-3.3.0.min.js"></script>
+    <script src="~/mainassets/js/vendor/modernizr-3.11.2.min.js"></script>
+    <script src="~/mainassets/js/vendor/jquery.waypoints.js"></script>
+
+    <!--Plugins JS-->
+    <script src="~/mainassets/js/plugins/wow.min.js"></script>
+    <script src="~/mainassets/js/plugins/jquery-ui.min.js"></script>
+    <script src="~/mainassets/js/plugins/swiper-bundle.min.js"></script>
+    <script src="~/mainassets/js/plugins/jquery.nice-select.js"></script>
+    <script src="~/mainassets/js/plugins/parallax.min.js"></script>
+    <script src="~/mainassets/js/plugins/jquery.magnific-popup.min.js"></script>
+
+    <!--Main JS (Common Activation Codes)-->
+    <script src="~/mainassets/js/main.js"></script>
+    @await Component.InvokeAsync("Notyf")
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+</html>

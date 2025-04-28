@@ -1,0 +1,140 @@
+﻿@using PagedList.Core.Mvc
+@model PagedList.Core.IPagedList<WebBanHang.Models.DonHang>
+
+@{
+    int CurrentPage = ViewBag.CurrentPage;
+    ViewData["Title"] = "QL giao hàng ";
+    Layout = "~/Areas/Ship/Views/Shared/_ShipperLayout.cshtml";
+    var ls = ViewBag.lsTrangThai;
+}
+
+<div class="page-header">
+    <h2 class="header-title">Quản lý giao hàng</h2>
+    <div class="header-sub-title">
+        <nav class="breadcrumb breadcrumb-dash">
+            <a asp-area="Ship" asp-controller="Home" asp-action="Index" class="breadcrumb-item"><i class="anticon anticon-home m-r-5"></i>Home</a>
+            <span class="breadcrumb-item active">Danh sách đơn hàng</span>
+        </nav>
+    </div>
+</div>
+<div class="card">
+    <div class="card-body">
+        <div class="row m-b-30">
+            <div class="col-lg-8">
+                <div class="d-md-flex">
+                    <div class="m-b-10 m-r-15">
+                        <select class="custom-select" style="min-width: 170px;" id="txtStt" name="txtStt" asp-items="ViewBag.lsTrangThai">
+                            <option selected>- Chọn trạng thái -</option>
+                            <option value="0">Tất cả</option>
+                        </select>
+                    </div>
+                    @*<div class="m-b-10 ">
+                        <div class="input-affix" style="min-width: 200px;">
+                            <i class="prefix-icon anticon anticon-search opacity-04"></i>
+                            <input id="searchKey" name="searchKey" type="text" class="form-control" placeholder="Tìm">
+                        </div>
+                    </div>*@
+
+                </div>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover e-commerce-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Ngày mua</th>
+                        <th>Ngày giao</th>
+                        <th>Tổng tiền</th>
+                        <th>Trạng thái</th>
+                        <th>#</th>
+                    </tr>
+                </thead>
+                <tbody id="records_table">
+                    @if (Model != null)
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>#@item.MaDh</td>
+
+                                <td>@item.NgayDat</td>
+                                <td>@item.NgayShip</td>
+                                <td>@item.TongTien.Value.ToString("#,##0") đ</td>
+                                <td>@item.MaTtNavigation.TenTt</td>
+                                <td class="text-right">
+                                    <a class="btn btn-icon btn-hover btn-sm btn-rounded" asp-area="Ship" asp-controller="Home" asp-action="ChangeStatus" asp-route-id="@item.MaDh">
+                                        <i class="anticon anticon-edit"></i>
+                                    </a>
+
+                                </td>
+                            </tr>
+                        }
+                    }
+
+                </tbody>
+            </table>
+
+            <div aria-label="Page navigation example">
+                <ul class="pagination">
+                    <pager class="pager-container" list="@Model" asp-area="Ship" asp-controller="Home" asp-action="Index" asp-route-MaLoai="@ViewBag.CurrentTrangThai" />
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            jQuery("#txtStt").change(function () {
+                var tt = jQuery(this).children(":selected").attr("value");
+                tt = parseFloat(tt);
+
+                $('#txtStt option')
+                    .removeAttr('selected');
+                $("#txtStt > [value=" + tt + "]").attr("selected", "true");
+
+                $.ajax({
+                    url: '/Ship/Home/Filter',
+                    datatype: "json",
+                    type: "GET",
+                    data: {
+                        TrangThai: tt,
+                    },
+                    async: true,
+                    success: function (results) {
+                        if (results.status == "success") {
+                            window.location.href = results.redirectUrl;
+                        }
+                    },
+                    error: function (xhr) {
+                        alert('error');
+                    }
+                });
+            });
+
+            //$("#searchKey").keyup(function () {
+            //    var strSearchKey = $("#searchKey").val();
+            //    $.ajax({
+            //        url: '/Admin/Search/TimSanPham/',
+            //        datatype: "json",
+            //        type: "POST",
+            //        data: {
+            //            searchKey: strSearchKey
+            //        },
+            //        async: true,
+            //        success: function (results) {
+            //            //$('#loader').hide();
+            //            $('#records_table').html("");
+            //            $('#records_table').html(results);
+            //        },
+            //        error: function (xhr) {
+            //            alert('error');
+            //        }
+            //    });
+            //});
+        });
+    </script>
+}
+

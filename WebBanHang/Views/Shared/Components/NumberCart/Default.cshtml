@@ -1,0 +1,17 @@
+﻿@model List<WebBanHang.ModelViews.CartItem>
+<li class="minicart-wrap me-3 me-lg-0">
+    <a href="#miniCart" class="minicart-btn toolbar-btn">
+        <img src="~/images/Icon/giohang.png" alt="Giỏ hàng" class="cart-image">
+        @{
+            int sl = 0;
+            if (Model != null && Model.Count() > 0)
+            {
+                foreach (var item in Model)
+                {
+                    sl += item.amount;
+                }
+            }
+        }
+        <span class="quantity">@sl</span>
+    </a>
+</li>

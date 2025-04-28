@@ -1,0 +1,380 @@
+﻿@model WebBanHang.ModelViews.MuaHangVM
+@{
+    ViewData["Title"] = "Mua hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<WebBanHang.ModelViews.CartItem> Carts = ViewBag.GioHang;
+    List<WebBanHang.Models.KhuyenMai> dsgg = ViewBag.DSGG;
+}
+
+<style type="text/css">
+    .nice-select .list {
+        border-radius: 0px;
+        overflow-y: auto;
+        overflow: hidden;
+        max-height: 200px;
+        overflow-y: scroll;
+    }
+
+    .nice-select .option:hover, .nice-select .option.focus, .nice-select .option.selected.focus {
+        color: #4099a1;
+        background: #dfdfdf;
+    }
+</style>
+
+
+<!-- Begin Main Content Area -->
+<main class="main-content">
+    <div class="breadcrumb-area breadcrumb-height" style="height:150px;background-color:#E3F0E1">
+        <div class="container h-100">
+            <div class="row h-100">
+                <div class="col-lg-12">
+                    <div class="breadcrumb-item">
+                        <h2 style="font-family:Verdana" class="breadcrumb-heading">Đặt hàng</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="checkout-area section-space-y-axis-100">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="coupon-accordion">
+
+                        <h3 style="font-family:Verdana">Mã giảm giá số lượng có hạn! Nhập ngay:
+                                @if(dsgg != null)
+                                {
+                                    foreach(var item in dsgg)
+                                    {
+                                    <span> "@item.MaNhap.ToUpper()" (Giảm @item.GiaTriGiam.Value.ToString("0,00#") đơn từ @item.GiaTriToiThieu.Value.ToString("0,00#")). </span>
+                                    }
+                                }
+
+                        </h3>
+                    </div>
+                    
+                    <form action="javascript:void(0)" method="post">
+                        <p class="checkout-coupon">
+                            <input form="myform" id="macode" name="macode" placeholder="CODE" type="text">
+                            <input id="checkGG" class="btn btn-secondary" value="Áp dụng" type="submit">
+                        </p>
+                    </form>
+                </div>
+            </div>
+            <form asp-controller="Checkout" asp-action="Index" method="post" id="myform">
+                <input hidden asp-for="CustomerId" />
+                <div class="row">
+                    <div class="col-lg-6 col-12">
+
+                        <div class="checkbox-form">
+                            <h3 style="font-family:Verdana">Thông tin giao hàng</h3>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="checkout-form-list">
+                                        <label>Họ tên <span class="required">*</span></label>
+                                        <input asp-for="FullName" placeholder="" type="text">
+                                        <span asp-validation-for="FullName" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="checkout-form-list">
+                                        <label>Số diện thoại <span class="required">*</span></label>
+                                        <input asp-for="Phone" placeholder="" type="text">
+                                        <span asp-validation-for="Phone" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="checkout-form-list">
+                                        <label>Địa chỉ nhận hàng<span class="required">*</span></label>
+                                        <input asp-for="Address" placeholder="" type="text">
+                                        <span asp-validation-for="Address" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="country-select">
+                                        <label>Tỉnh/Thành<span class="required">*</span></label>
+                                        <select asp-for="TinhThanh" class="myniceselect nice-select wide" asp-items="ViewBag.lsTinhThanh">
+                                            <option value="0" disabled selected>Tỉnh/Thành</option>
+                                        </select>
+                                        <span asp-validation-for="TinhThanh" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="country-select">
+                                        <label>Quận/Huyện<span class="required">*</span></label>
+                                        <select asp-for="QuanHuyen" class="myniceselect nice-select wide" asp-items="ViewBag.lsQuanHuyen">
+                                            <option value="0" disabled selected>Quận/Huyện</option>
+                                        </select>
+                                        <span asp-validation-for="QuanHuyen" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="country-select">
+                                        <label>Phường/Xã<span class="required">*</span></label>
+                                        <select asp-for="PhuongXa" class="myniceselect nice-select wide" asp-items="ViewBag.lsPhuongXa">
+                                            <option value="0" disabled selected>Phường/Xã</option>
+                                        </select>
+                                        <span asp-validation-for="PhuongXa" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            @*                            <div class="different-address">
+                            <div class="order-notes">
+                            <div class="checkout-form-list checkout-form-list-2">
+                            <label>Ghi chú</label>
+                            <textarea id="checkout-mess" cols="30" rows="10" placeholder=""></textarea>
+                            </div>
+                            </div>
+                            </div>*@
+                        </div>
+
+                    </div>
+                    <div class="col-lg-6 col-12">
+                        <div class="your-order">
+                            <h3 style="font-family:Verdana">Đơn hàng</h3>
+                            @*sản phẩm*@
+                            <div class="your-order-table table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th class="cart-product-name"><strong>Sản phẩm</strong></th>
+                                            <th class="cart-product-total"><strong>Tổng</strong></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Carts.Count() > 0)
+                                        {
+                                            foreach (var item in Carts)
+                                            {
+                                                <tr class="cart_item">
+                                                    <td class="cart-product-name">
+                                                        @item.product.TenSp<strong class="product-quantity">
+                                                            × @item.amount
+                                                        </strong>
+                                                    </td>
+                                                    <td style="text-align:right" class="cart-product-total"><span class="amount">@item.TotalMoney.ToString("#,##0") đ</span></td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                            @*tổng tiền*@
+                            <div class="your-order-table table-responsive">
+                                <table>
+                                    <tfoot>
+                                        <tr class="cart-subtotal">
+                                            <td>Tạm tính</td>
+                                            <td style="text-align:right"><span id="soTienTamTinh" class="amount">@Carts.Sum(x=>x.TotalMoney).ToString("#,##0")</span><span>&nbsp;đ</span></td>
+                                            @*input để truyền MGG*@
+                                            <input hidden id="tongtien" value="@Carts.Sum(x=>x.TotalMoney)" />
+                                        </tr>
+                                        <tr class="cart-subtotal">
+                                            <td>Giảm giá</td>
+                                            <td style="text-align:right"><span id="soTienGiam" class="amount">0</span><span> đ</span></td>
+                                            <input hidden id="soTienGiamInput" name="soTienGiamInput" value="0" />
+                                        </tr>
+
+                                        <tr class="cart-subtotal">
+                                            <td>Phí giao hàng</td>
+                                            <td style="text-align:right">
+                                                @if (Carts.Sum(x => x.TotalMoney) >= 999000)
+                                                {
+                                                    <input id="phiGiaoHangInput" name="phiGiaoHangInput" hidden value="0">
+                                                    <span class="amount">
+                                                        0 đ
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <input id="phiGiaoHangInput" name="phiGiaoHangInput" hidden value="50000">
+                                                    <span class="amount">
+                                                        50,000 đ
+                                                    </span>
+                                                }
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Tổng đơn hàng</th>
+                                            <th style="text-align:right">
+                                                @if (Carts.Sum(x => x.TotalMoney) >= 999000)
+                                                {
+                                                    <span id="tongDonHang" class="amount">@Carts.Sum(x=>x.TotalMoney).ToString("#,##0")</span>
+                                                    <span>&nbsp;đ</span>
+                                                    <input id="tongDonHangInput" name="tongDonHangInput" hidden value="@Carts.Sum(x=>x.TotalMoney)">
+                                                }
+                                                else
+                                                {
+                                                    int tong = @Carts.Sum(x => x.TotalMoney) + 50000;
+                                                    <span id="tongDonHang" class="amount">@tong.ToString("#,##0")</span>
+                                                    <span>&nbsp;đ</span>
+                                                    <input id="tongDonHangInput" name="tongDonHangInput" hidden value="@tong">
+
+                                                }
+                                            </th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            <div class="payment-method">
+                                <div class="payment-accordion" style="text-align:center">
+                                    <div>
+                                        <input style="width:400px; height:50px" class="btn btn-secondary btn-primary-hover" value="Thanh toán khi nhận hàng" type="submit">
+                                    </div>
+                                    <p style="margin: 10px auto; width: 50%;text-align:center; justify-content: center">
+                                        hoặc
+                                    </p>
+                                    <div>
+                                        <button style="width:400px; height:50px" class="btn btn-secondary btn-primary-hover" formaction="/Checkout/CreatePaymentUrl" type="submit">
+                                            Thanh toán qua VNPAY
+                                            <img style="height:35px" src="~/images/banners/vnpay2.jpg" />
+                                        </button>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+<!-- Main Content Area End Here -->
+
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            $('select').niceSelect();
+
+            //
+            $(function () {
+                $("#TinhThanh").change(function () {
+                    var tinhThanhId = $('#TinhThanh').val();
+
+                    $.ajax({
+                        url: '/Location/QuanHuyenList',
+                        type: "GET",
+                        datatype: "json",
+                        data: {
+                            TinhThanhId: tinhThanhId,
+                        },
+                        success: function (QuanHuyens) {
+                            //
+                            $('#QuanHuyen').empty();
+                            $('#PhuongXa').empty();
+                            //
+                            var strPhuongXa = '<option value="" disabled selected>Phường/Xã</option>';
+                            $('#PhuongXa').append(strPhuongXa);
+                            var strQuanHuyen = '<option value="" disabled selected>Quận/Huyện</option>';
+                            $('#QuanHuyen').append(strQuanHuyen);
+
+                            $.each(QuanHuyens, function (i, item) {
+                                var option = '<option value="' + item.maqh + '">' + item.name + '</option>';
+                                $('#QuanHuyen').append(option);
+
+                            });
+                            $('select').niceSelect('update');
+                        },
+                    });
+                });
+
+
+            });
+            $(function () {
+                $("#QuanHuyen").change(function () {
+                    var quanHuyenId = $('#QuanHuyen').val();
+
+                    $.ajax({
+                        url: '/Location/PhuongXaList',
+                        type: "GET",
+                        datatype: "json",
+                        data: {
+                            QuanHuyenId: quanHuyenId,
+                        },
+                        success: function (PhuongXas) {
+                            //
+                            $('#PhuongXa').empty();
+                            //
+                            var rol = '<option value="" disabled selected>Phường/Xã</option>';
+                            $('#PhuongXa').append(rol);
+
+                            $.each(PhuongXas, function (i, item) {
+                                var option = '<option value="' + item.maxa + '">' + item.name + '</option>';
+                                $('#PhuongXa').append(option);
+
+                            });
+                            $('select').niceSelect('update');
+                        },
+                    });
+                });
+            });
+            // nhập mã gg
+            $("#checkGG").click(function (e) {
+                e.preventDefault();
+                //
+                var tongTienSanPham = @Carts.Sum(x=>x.TotalMoney);
+                //
+                $.ajax({
+                    type: "POST",
+                    url: "/Checkout/CheckMaGG/",
+                    data: {
+                        MaCode: $("#macode").val(),
+                        TongTien: $("#tongtien").val()
+                    },
+                    success: function (result) {
+                        if (result.success == true) {
+                            var hienthi = (result.tienGiam).toLocaleString('en-US')
+                            $("#soTienGiam").html("");
+                            $("#soTienGiam").html(hienthi);
+                            $("#soTienGiamInput").val(result.tienGiam).trigger('change');
+                            console.log($("#soTienGiamInput").val());
+                            //
+                            var tongDonHang
+                            var tongDonHangInput
+                            if (tongTienSanPham >= 999000) {
+                                tongDonHang = (tongTienSanPham - result.tienGiam).toLocaleString('en-US');
+                                tongDonHangInput = (tongTienSanPham - result.tienGiam);
+                            }
+                            else {
+                                tongDonHang = (tongTienSanPham + 50000 - result.tienGiam).toLocaleString('en-US');
+                                tongDonHangInput = (tongTienSanPham + 50000 - result.tienGiam);
+                            }
+                            $("#tongDonHang").html(tongDonHang);
+                            $("#tongDonHangInput").val(tongDonHangInput).trigger('change');
+                            alert("Áp dụng thành công");
+
+                        }
+                        else {
+                            alert(result.error);
+                            $("#soTienGiam").html("");
+                            $("#soTienGiam").html(0);
+                            $("#soTienGiamInput").val(0).change();
+                            //
+                            var tongDonHang
+                            var tongDonHangInput
+                            if (tongTienSanPham >= 999000) {
+                                tongDonHang = (tongTienSanPham).toLocaleString('en-US');
+                                tongDonHangInput = tongTienSanPham;
+                            }
+                            else {
+                                tongDonHang = (tongTienSanPham + 50000).toLocaleString('en-US');
+                                tongDonHangInput = (tongTienSanPham + 50000);
+                            }
+                            $("#tongDonHang").html(tongDonHang);
+                            $("#tongDonHangInput").val(tongDonHangInput).trigger('change');
+                        }
+                    },
+                    error: function (result) {
+                        alert('Lỗi');
+                    }
+                });
+            });
+            // bắt sự kiện thay đổi
+
+        });
+    </script>
+}
+

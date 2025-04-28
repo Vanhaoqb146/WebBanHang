@@ -1,0 +1,22 @@
+# Visual Studio temporary files
+.vs/
+*.suo
+*.user
+*.sln.docstates
+
+# Build output
+bin/
+obj/
+
+# Dependency directories
+packages/
+node_modules/
+
+# IDE-specific files
+*.csproj.user
+*.DotSettings.user
+
+# Other
+*.log
+*.bak
+Thumbs.db

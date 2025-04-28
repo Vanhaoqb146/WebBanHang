@@ -1,0 +1,278 @@
+﻿@{
+    ViewData["Title"] = "Admin";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-6 col-lg-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="media align-items-center">
+                    <div class="avatar avatar-icon avatar-lg avatar-blue">
+                        <a href="/Admin/LoaiSanPhams">
+                            <i class="anticon anticon-shop"></i>
+                        </a> 
+                    </div>
+                    <div class="m-l-15">
+                        <h2 class="m-b-0">@ViewBag.LSP</h2>
+                        <p class="m-b-0 text-muted">Loại sản phẩm</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="media align-items-center">
+                    <div class="avatar avatar-icon avatar-lg avatar-cyan">
+                        <a href="/Admin/SanPhams">
+                            <i class="anticon anticon-shopping"></i>
+                        </a> 
+                    </div>
+                    <div class="m-l-15">
+                        <h2 class="m-b-0">@ViewBag.SP</h2>
+                        <p class="m-b-0 text-muted">Sản phẩm</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="media align-items-center">
+                    <div class="avatar avatar-icon avatar-lg avatar-gold">
+                        <a href="/Admin/DonHangs">
+                            <i class="anticon anticon-profile"></i>
+                        </a>
+                    </div>
+                    <div class="m-l-15">
+                        <h2 class="m-b-0">@ViewBag.DH</h2>
+                        <p class="m-b-0 text-muted">Đơn hàng</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="media align-items-center">
+                    <div class="avatar avatar-icon avatar-lg avatar-purple">
+                        <a href="/Admin/KhachHangs">
+                            <i class="anticon anticon-user"></i>
+                        </a>
+                            
+                    </div>
+                    <div class="m-l-15">
+                        <h2 class="m-b-0">@ViewBag.KH</h2>
+                        <p class="m-b-0 text-muted">Khách hàng</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12 col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5>Doanh thu</h5>
+                </div>
+                <div class="m-t-50" style="height: 330px">
+                    <canvas class="chart" id="revenue-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-12 col-lg-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="m-b-0">Đơn hàng</h5>
+                <div class="m-v-60 text-center" style="height: 200px">
+                    <canvas class="chart" id="od-chart"></canvas>
+                </div>
+                <div class="row border-top p-t-25">
+                    <div class="col-4">
+                        <div class="d-flex justify-content-center">
+                            <div class="media align-items-center">
+                                <span style="background-color:rgb(255, 205, 86)" class="badge badge-dot m-r-10"></span>
+                                <div class="m-l-5">
+                                    <h4 class="m-b-0">@ViewBag.DH1</h4>
+                                    <p style="font-size:12px" class="m-b-0 muted">Chờ xử</p>
+                                    <p style="font-size:12px" class="m-b-0 muted">lý</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="d-flex justify-content-center">
+                            <div class="media align-items-center">
+                                <span style="background-color:rgb(54, 162, 235)" class="badge badge-dot m-r-10 m-l-10"></span>
+                                <div class="m-l-5">
+                                    <h4 class="m-b-0">@ViewBag.DH2</h4>
+                                    <p style="font-size:12px" class="m-b-0 muted">Thành công</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="d-flex justify-content-center">
+                            <div class="media align-items-center">
+                                <span style="background-color:rgb(255, 99, 132)" class="badge badge-dot m-r-10"></span>
+                                <div class="m-l-5">
+                                    <h4 class="m-b-0">@ViewBag.DH3</h4>
+                                    <p style="font-size:12px" class="m-b-0 muted">Đã</p>
+                                    <p style="font-size:12px" class="m-b-0 muted">hủy</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5>Top sản phẩm bán chạy</h5>
+                </div>
+                <div class="m-t-50" style="height: 330px">
+                    <canvas class="chart" id="topPro"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.bundle.js"></script>
+    <script>
+        var salesData = @Html.Raw(Json.Serialize(ViewBag.SalesData));
+        //console.log(salesData);
+        var chartLabels = salesData.map(s => {
+            var date = new Date(2024, s.month - 1, 1);
+            return date.toLocaleString('default', { month: 'short' });
+        });
+
+        var chartData = salesData.map(s => s.salesTotal);
+        //console.log(chartData);
+
+        var ctx = document.getElementById('revenue-chart').getContext('2d');
+        var salesChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: chartLabels,
+                datasets: [{
+                    label: 'Doanh số các tháng gần đây',
+                    data: chartData,
+                    fill: false,
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        //
+        var dh1 = @Html.Raw(Json.Serialize(ViewBag.DH1));
+        var dh2 = @Html.Raw(Json.Serialize(ViewBag.DH2));
+        var dh3 = @Html.Raw(Json.Serialize(ViewBag.DH3));
+        var tt1 = @Html.Raw(Json.Serialize(ViewBag.Ten1));
+        var tt2 = @Html.Raw(Json.Serialize(ViewBag.Ten2));
+        var tt3 = @Html.Raw(Json.Serialize(ViewBag.Ten3));
+        //
+        var chartLabels = [tt1,tt2,tt3];
+
+        var chartData = [dh1,dh2,dh3];
+
+        var ctx = document.getElementById('od-chart').getContext('2d');
+        var salesChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: chartLabels,
+                datasets: [{
+                    label: 'Doanh số các tháng gần đây',
+                    data: chartData,
+                    fill: false,
+                    backgroundColor: [
+                        'rgb(255, 205, 86)',
+                        'rgb(54, 162, 235)',
+                        'rgb(255, 99, 132)',
+                        
+                    ],
+                    tension: 0.1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        //
+        //
+        var salesData2 = @Html.Raw(Json.Serialize(ViewBag.TopSellingProducts));
+        var nameP = @Html.Raw(Json.Serialize(ViewBag.ProductName));
+        console.log(salesData2);
+        console.log(nameP);
+        var chartLabels = nameP.map(s => s.name);
+
+        var chartData = salesData2.map(s => s.quantity);
+        console.log(chartData);
+
+        var ctx = document.getElementById('topPro').getContext('2d');
+        var salesChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: chartLabels,
+                datasets: [{
+                    label: 'Số lượng đã bán',
+                    data: chartData,
+                    fill: false,
+                    borderColor: [
+                        'rgb(255, 99, 132)',
+                        'rgb(255, 159, 64)',
+                        'rgb(255, 205, 86)',
+                        'rgb(75, 192, 192)',
+                        'rgb(54, 162, 235)',
+                        'rgb(153, 102, 255)',
+                        'rgb(201, 203, 207)'
+                    ],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(255, 159, 64, 0.2)',
+                        'rgba(255, 205, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(201, 203, 207, 0.2)'
+                    ],
+                    borderWidth: 1,
+                    tension: 0.1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+    </script>
+}

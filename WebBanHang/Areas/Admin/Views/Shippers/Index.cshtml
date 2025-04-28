@@ -1,0 +1,117 @@
+﻿@using PagedList.Core.Mvc
+@model PagedList.Core.IPagedList<WebBanHang.Models.Shipper>
+
+@{
+    int CurrentPage = ViewBag.CurrentPage;
+    ViewData["Title"] = "Shipper";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="page-header">
+    <h2 class="header-title">Quản lý shipper</h2>
+    <div class="header-sub-title">
+        <nav class="breadcrumb breadcrumb-dash">
+            <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="breadcrumb-item"><i class="anticon anticon-home m-r-5"></i>Home</a>
+            <span class="breadcrumb-item active">Danh sách shipper</span>
+        </nav>
+    </div>
+</div>
+<div class="card">
+    <div class="card-body">
+        <div class="row m-b-30">
+            @*<div class="col-lg-8">
+            <div class="d-md-flex">
+            <div class="m-b-10 m-r-15">
+            <select class="custom-select" style="min-width: 160px;" id="txtMaLoai" name="txtMaLoai" asp-items="ViewBag.LoaiSP">
+            <option selected>-Chọn loại SP-</option>
+            <option value="0">Tất cả</option>
+            </select>
+            </div>
+            <div class="m-b-10 ">
+            <div class="input-affix" style="min-width: 200px;">
+            <i class="prefix-icon anticon anticon-search opacity-04"></i>
+            <input id="searchKey" name="searchKey" type="text" class="form-control" placeholder="Tìm tên sản phẩm">
+            </div>
+            </div>
+
+            </div>
+            </div>*@
+            <div class="col-lg-4">
+                <a class="btn btn-primary" asp-area="Admin" asp-controller="Shippers" asp-action="Create">
+                    <i class="anticon anticon-plus-circle m-r-5"></i>
+                    <span>Thêm mới</span>
+                </a>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover e-commerce-table">
+                <thead>
+                    <tr>
+                        <th style="font-weight:bold">ID</th>
+                        <th style="font-weight:bold">Tên</th>
+                        <th style="font-weight:bold">Email</th>
+                        <th style="font-weight:bold">SĐT</th>
+                        <th style="font-weight:bold">Trạng thái</th>
+                        <th style="font-weight:bold" class="text-right">#</th>
+                    </tr>
+                </thead>
+                <tbody id="records_table">
+                    @if (Model != null)
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td style="font-weight:bold">
+                                    @item.MaShipper
+                                </td>
+                                <td>
+                                    @item.TenShipper
+                                </td>
+                                <td>
+                                    @item.Email
+                                </td>
+                                <td>
+                                    @item.Sdt
+                                </td>
+                                <td>
+                                    @if (item.Khoa == false)
+                                    {
+                                        <div class="d-flex align-items-center">
+                                            <div class="badge badge-success badge-dot m-r-10"></div>
+                                            <div>Hoạt động</div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="d-flex align-items-center">
+                                            <div class="badge badge-danger badge-dot m-r-10"></div>
+                                            <div>Khóa</div>
+                                        </div>
+                                    }
+
+                                </td>
+                                <td class="text-right">
+                                    <a class="btn btn-icon btn-hover btn-sm btn-rounded pull-right" asp-area="Admin" asp-controller="Shippers" asp-action="Delete" asp-route-id="@item.MaShipper">
+                                        <i class="anticon anticon-lock"></i>
+                                    </a>
+
+                                    <a class="btn btn-icon btn-hover btn-sm btn-rounded" asp-area="Admin" asp-controller="Shippers" asp-action="Edit" asp-route-id="@item.MaShipper">
+                                        <i class="anticon anticon-edit"></i>
+                                    </a>
+
+                                </td>
+                            </tr>
+                        }
+                    }
+
+                </tbody>
+            </table>
+
+            <div aria-label="Page navigation example">
+                <ul class="pagination">
+                    <pager class="pager-container" list="@Model" asp-area="Admin" asp-controller="Shippers" asp-action="Index" />
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

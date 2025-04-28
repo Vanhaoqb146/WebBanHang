@@ -1,0 +1,145 @@
+﻿@model WebBanHang.ModelViews.XemDonHang
+
+
+
+@if (Model.ChiTietDonHang != null)
+{
+    <h5 style="font-family:Verdana">Đơn hàng #@Model.DonHang.MaDh - @Model.DonHang.MaTtNavigation.TenTt</h5>
+    <br />
+    <p>Hình thức thanh toán: @Model.DonHang.PhuongThucThanhToan</p>
+
+    <p>Người nhận: @Model.DonHang.MaKhNavigation.TenKh - @Model.DonHang.MaKhNavigation.Sdt</p>
+    <p>Ngày đặt: @Model.DonHang.NgayDat</p>
+
+    <p>Địa chỉ: @ViewBag.FullAddress</p>
+    
+
+
+    @if (Model.DonHang.MaTt == 1)
+    {
+        if(Model.DonHang.PhuongThucThanhToan =="VNPAY"){}
+        else
+        {
+            <form asp-controller="DonHang" asp-action="Huy" method="post">
+                <input hidden id="madh" name="madh" value="@Model.DonHang.MaDh" type="text">
+                <button class="btn btn-secondary btn-primary-hover" type="submit">Hủy đơn hàng</button>
+            </form>
+        }
+        
+    }
+    @if (Model.DonHang.MaShipper != null)
+    {
+        <p>Shipper: @Model.DonHang.MaShipperNavigation.TenShipper - SĐT: @Model.DonHang.MaShipperNavigation.Sdt</p>
+        @*<p>Loại xe: @Model.DonHang.MaShipperNavigation.LoaiXe</p>
+        <p>Biển số: @Model.DonHang.MaShipperNavigation.BienSo</p>*@
+    }
+
+
+
+    <br />
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <tbody>
+                <tr>
+                    <th>Sản phẩm</th>
+                    <th>SL</th>
+                    <th>Đơn giá</th>
+                    <th>Thành tiền</th>
+                </tr>
+                @foreach (var item in Model.ChiTietDonHang)
+                {
+                    <tr>
+                        <td>
+                            @item.MaSpNavigation.TenSp
+                            
+
+                        </td>
+                        <td>@item.SoLuong</td>
+                        <td>
+                            <del>@item.GiaBan.Value.ToString("#,##0") đ</del>
+                            <br />@item.GiaGiam.Value.ToString("#,##0") đ
+                        </td>
+                        <td style="text-align:right">@item.TongTien.Value.ToString("#,##0") đ</td>
+                    </tr>
+                }
+                <tr>
+                    <td style="text-align:right" colspan="3">Tổng giá trị sản phẩm</td>
+                    <td style="text-align:right">@Model.ChiTietDonHang.Sum(x=>x.TongTien).Value.ToString("#,##0") đ</td>
+                </tr>
+                <tr>
+                    <td style="text-align:right" colspan="3">Giảm giá</td>
+                    <td style="text-align:right">@Model.DonHang.GiamGia.Value.ToString("#,##0") đ</td>
+                </tr>
+                <tr>
+                    <td style="text-align:right" colspan="3">Phí giao hàng</td>
+                    <td style="text-align:right">
+                        @{
+                            var pgh = Model.DonHang.TienShip - Model.DonHang.GiamGiaShip;
+                        }
+                        @pgh.Value.ToString("#,##0") đ
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-weight:bold; text-align:right" colspan="3">Tổng thanh toán</td>
+                    <td style="font-weight:bold; text-align:right">@Model.DonHang.TongTien.Value.ToString("#,##0") đ</td>
+                </tr>
+
+            </tbody>
+        </table>
+       
+        <div>
+            @* <h4>Trạng thái đơn hàng: @Model.DonHang.MaTtNavigation.TenTt</h4> *@
+            <div>
+                @if (Model.DonHang.MaTtNavigation.MaTt == 4)
+                {
+                    <button id="btnDaNhan" class="btn btn-success" onclick="xacNhanDonHang(true)" disabled="@(Model.DonHang.TrangThaiXacNhan != 0)">Đã nhận được hàng</button>
+                    <button id="btnChuaNhan" class="btn btn-danger" onclick="xacNhanDonHang(false)" disabled="@(Model.DonHang.TrangThaiXacNhan != 0)">Trả hàng/Hoàn tiền</button>
+                    <div hidden="@(Model.DonHang.TrangThaiXacNhan != -1)" class="text-danger">Cửa hàng đang xử lý vấn đề của bạn. Vui lòng chờ.</div>
+                }
+            </div>
+        </div>
+    </div>
+    <br />
+    <br />
+    <hr />
+    <script>
+        function xacNhanDonHang(daNhan) {
+            const url = '/DonHang/XacNhanTrangThai';
+            const data = {
+                maDonHang: @Model.DonHang.MaDh,
+                daNhan: daNhan
+            };
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json(); // Lấy JSON từ controller
+                    } else {
+                        throw new Error("Có lỗi xảy ra, vui lòng thử lại.");
+                    }
+                })
+                .then(data => {
+                    alert(data.message); // Hiển thị message từ controller
+                    location.reload();
+                })
+                .catch(error => {
+                    alert(error.message);
+                });
+        }
+            @* .then(response => {
+                if (response.ok) {
+                    alert('Cập nhật trạng thái thành công!');
+                    location.reload();
+                } else {
+                    alert('Có lỗi xảy ra, vui lòng thử lại.');
+                }
+            }); *@
+    </script>
+
+}

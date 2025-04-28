@@ -1,0 +1,44 @@
+﻿
+@{
+    ViewData["Title"] = "Giảm giá";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+<div class="page-header">
+    <h2 class="header-title">Giảm giá theo danh mục</h2>
+    <div class="header-sub-title">
+        <nav class="breadcrumb breadcrumb-dash">
+            <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="breadcrumb-item"><i class="anticon anticon-home m-r-5"></i>Home</a>
+            <span class="breadcrumb-item active">Giảm giá</span>
+        </nav>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Giảm giá theo danh mục</h4>
+        <form asp-controller="KhuyenMais" asp-action="GiamGia" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Loại sản phẩm</label>
+                <div class="col-sm-3">
+                    <select class="custom-select" name="MaLoai" asp-items="ViewBag.LoaiSP">
+                        <option value="" disabled selected>-Chọn loại sp-</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Phần trăm giảm (%)</label>
+                <div class="col-sm-3">
+                    <input type="number" required min="1" max="100" name="PhanTram" class="form-control" placeholder="Phần trăm giảm">
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-sm-5">
+                    <button type="submit" class="btn btn-primary">Xác nhận</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

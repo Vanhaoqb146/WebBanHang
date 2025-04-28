@@ -1,0 +1,107 @@
+﻿@model WebBanHang.Models.SanPham
+
+@{
+    ViewData["Title"] = "Delete";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+<div class="page-header">
+    <h2 class="header-title">Quản lý sản phẩm</h2>
+    <div class="header-sub-title">
+        <nav class="breadcrumb breadcrumb-dash">
+            <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="breadcrumb-item"><i class="anticon anticon-home m-r-5"></i>Home</a>
+            <a asp-area="Admin" asp-controller="SanPhams" asp-action="Index" class="breadcrumb-item">Sản phẩm</a>
+            <span class="breadcrumb-item active">Xóa sản phẩm</span>
+        </nav>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Xóa sản phẩm</h4>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">ID</label>
+            <div class="col-sm-2">
+                <input style="background-color:#F7F9F9;" type="text" readonly class="form-control" asp-for="MaSp">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Tên</label>
+            <div class="col-sm-6">
+                <input style="background-color:#F7F9F9;" type="text" readonly class="form-control" asp-for="TenSp">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Giá bán</label>
+            <div class="col-sm-2">
+                <input style="background-color:#F7F9F9;" type="text" readonly class="form-control" asp-for="GiaBan">
+            </div>
+
+            <label class="col-sm-1 offset-sm-1 col-form-label">Giá giảm</label>
+            <div class="col-sm-2">
+                <input style="background-color:#F7F9F9;" type="text" readonly class="form-control" asp-for="GiaGiam">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Số lượng</label>
+            <div class="col-sm-2">
+                <input style="background-color:#F7F9F9;" type="text" readonly class="form-control" asp-for="SoLuongCo">
+            </div>
+        </div>
+        @*Ảnh*@
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Ảnh</label>
+            <div class="col-sm-2">
+                <div class="d-flex align-items-center">
+                    <img class="img-fluid img-thumbnail" src="~/images/sanpham/@Model.Anh" style="max-width: 200px" alt="img">
+                </div>
+            </div>
+        </div>
+        @*Ảnh*@
+       @*  <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Công suất (W)</label>
+            <div class="col-sm-2">
+                <input style="background-color:#F7F9F9;" type="text" readonly class="form-control" asp-for="CongSuat">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Khối lượng (Kg)</label>
+            <div class="col-sm-2">
+                <input style="background-color:#F7F9F9;" type="text" readonly class="form-control" asp-for="KhoiLuong">
+            </div>
+        </div> *@
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Bảo hành (tháng)</label>
+            <div class="col-sm-2">
+                <input style="background-color:#F7F9F9;" type="text" readonly class="form-control" asp-for="BaoHanh">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Mô tả</label>
+            <div class="col-sm-6">
+                <textarea style="background-color:#F7F9F9;" readonly rows="7" class="form-control" asp-for="MoTa"></textarea>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Loại sản phẩm</label>
+            <div class="col-sm-3">
+                <input style="background-color:#F7F9F9;" type="text" readonly class="form-control" asp-for="MaLoaiNavigation.TenLoai">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Thương hiệu</label>
+            <div class="col-sm-3">
+                <input style="background-color:#F7F9F9;" type="text" readonly class="form-control" asp-for="MaThNavigation.TenTh">
+            </div>
+        </div>
+        <hr/>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Bạn có chắc muốn xóa?</label>
+            <div class="col-sm-3">
+                <form asp-controller="SanPhams" asp-action="Delete" asp-route-id="@Model.MaSp">
+                    <input type="hidden" asp-for="MaSp" />
+                    <input type="submit" value="Xác nhận xóa" class="btn btn-danger" />
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

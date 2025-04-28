@@ -1,0 +1,249 @@
+﻿<header class="main-header_area position-relative">
+    <div class="header-top border-bottom d-none d-md-block">
+        <div class="container-fluid p-0">
+            <div class="row align-items-center g-0 " style="margin: 0;">
+                <div class="col-12 p-0">
+                    <div class="header-banner">
+                        <a href="/dangky">
+                            <img src="~/images/banners/topbar_img.png" alt="TopBar" class="img-fluid" />
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="header-middle py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-12">
+                    <div class="header-middle-wrap">
+                        <a href="/" class="header-logo">
+                            <img src="~/images/logo.jpg" alt="Perfect Home">
+                        </a>
+                        <div class="header-search-area d-none d-lg-block">
+                            <form asp-controller="SanPham" asp-action="Index" method="get" class="header-searchbox">
+                                <input class="input-field" name="searchKey" type="text" placeholder="Nhập tên bàn, ghế, tủ,... cần tìm">
+                                <button class="btn btn-outline-whisper btn-primary-hover" type="submit"><i class="pe-7s-search"></i></button>
+                            </form>
+                            <div class="policy-search d-none d-xl-block">
+                                <img src="~/images/Icon/giaohang.jpg" alt="Giao hàng toàn quốc">
+                                <span>Giao hàng toàn quốc</span>
+                                <img src="~/images/Icon/cuahang.jpg" alt="Hệ thống cửa hàng Perfect Home">
+                                <span>Hệ thống cửa hàng PERFECT HOME</span>
+                                <img src="~/images/Icon/hotline.jpg" alt="Hotline: 1900 12 34 56 (9-21h)">
+                                <span>Hotline: 1900 12 34 56 (9-21h)</span>
+                            </div>
+                        </div>
+                        <div class="header-right">
+                            <ul>
+                                <li class="dropdown d-none d-md-block">
+                                    <button class="btn btn-link dropdown-toggle ht-btn p-0" type="button" id="settingButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="pe-7s-users"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="settingButton">
+                                        @if (User.Identity.IsAuthenticated)
+                                        {
+                                            <li><a class="dropdown-item" href="/taikhoan">Tài khoản của tôi</a></li>
+                                        }
+                                        else
+                                        {
+                                            <li><a class="dropdown-item" href="/dangky">Đăng ký</a></li>
+                                            <li><a class="dropdown-item" href="/dangnhap">Đăng nhập</a></li>
+                                        }
+                                    </ul>
+                                </li>
+                                @await Component.InvokeAsync("NumberCart")
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="main-header header-sticky" data-bg-color="#4099a1">
+        <div class="container">
+            <div class="main-header_nav position-relative">
+                <div class="row align-items-center">
+                    <div class="col-lg-12 d-none d-lg-block">
+                        <div class="main-menu">
+                            <nav class="main-nav">
+                                <ul>
+                                    <li class="drop-holder">
+                                        <a href="/">Trang chủ</a>
+                                    </li>
+                                    <li class="nav-item dropdown">
+                                        <a class="nav-link" asp-controller="SanPham" asp-action="Index" data-toggle="submenu">Sản phẩm <i class="fas fa-chevron-up arrow"></i></a>
+                                        <ul class="dropdown-menu" aria-labelledby="sanphamDropdown">
+                                            <li><a class="dropdown-item" href="/sanphams/10">Bàn Văn Phòng</a></li>
+                                            <li><a class="dropdown-item" href="/sanphams/11">Ghế Văn Phòng</a></li>
+                                            <li><a class="dropdown-item" href="/sanphams/12">Tủ Văn Phòng</a></li>
+                                            <li><a class="dropdown-item" href="/sanphams/13">Sofa Văn Phòng</a></li>
+                                            <li><a class="dropdown-item" href="/sanphams/14">Giường Văn Phòng</a></li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <a asp-controller="Home" asp-action="ShoppingGuide">Hướng dẫn mua hàng</a>
+                                    </li>
+                                    <li>
+                                        <a asp-controller="Home" asp-action="About">Về chúng tôi</a>
+                                    </li>
+                                    <li>
+                                        <a asp-controller="Home" asp-action="Contact">Liên hệ</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                        <div class="header-icons-sticky d-none">
+                            <ul>
+                                <li class="dropdown">
+                                    <button class="btn btn-link dropdown-toggle ht-btn p-0" type="button" id="settingButtonSticky" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="pe-7s-users"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="settingButtonSticky">
+                                        @if (User.Identity.IsAuthenticated)
+                                        {
+                                            <li><a class="dropdown-item" href="/taikhoan">Tài khoản của tôi</a></li>
+                                        }
+                                        else
+                                        {
+                                            <li><a class="dropdown-item" href="/dangky">Đăng ký</a></li>
+                                            <li><a class="dropdown-item" href="/dangnhap">Đăng nhập</a></li>
+                                        }
+                                    </ul>
+                                </li>
+                                @await Component.InvokeAsync("NumberCart")
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="offcanvas-minicart_wrapper" id="miniCart">
+        @await Component.InvokeAsync("HeaderCart")
+    </div>
+    <div class="global-overlay"></div>
+</header>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Namespace để tránh xung đột
+        const customSubmenu = {
+            init: function () {
+                console.log('Custom submenu initialized'); // Debug
+                this.setupSubmenu();
+                this.setupLogo();
+                this.setupStickyIcons();
+                this.setupCart();
+            },
+            setupSubmenu: function () {
+                const submenuToggles = document.querySelectorAll('[data-toggle="submenu"]');
+                console.log('Submenu toggles found:', submenuToggles.length); // Debug
+                let closeTimeout;
+
+                submenuToggles.forEach(toggle => {
+                    const parent = toggle.closest('.nav-item.dropdown');
+                    if (!parent) {
+                        console.error('Parent .nav-item.dropdown not found for toggle:', toggle);
+                        return;
+                    }
+                    console.log('Processing toggle:', toggle); // Debug
+
+                    // Hover
+                    toggle.addEventListener('mouseenter', () => {
+                        console.log('Mouseenter on:', toggle); // Debug
+                        clearTimeout(closeTimeout); // Hủy đóng nếu đang hover
+                        document.querySelectorAll('.nav-item.dropdown').forEach(item => {
+                            item.classList.remove('active');
+                        });
+                        parent.classList.add('active');
+                    });
+
+                    // Rời vùng menu cha
+                    parent.addEventListener('mouseleave', () => {
+                        console.log('Mouseleave on:', parent); // Debug
+                        closeTimeout = setTimeout(() => {
+                            parent.classList.remove('active');
+                        }, 300); // Độ trễ 300ms để dễ chọn menu con
+                    });
+
+                    // Giữ menu mở khi hover vào menu con
+                    const dropdownMenu = parent.querySelector('.dropdown-menu');
+                    if (dropdownMenu) {
+                        dropdownMenu.addEventListener('mouseenter', () => {
+                            console.log('Mouseenter on dropdown menu'); // Debug
+                            clearTimeout(closeTimeout);
+                            parent.classList.add('active');
+                        });
+                        dropdownMenu.addEventListener('mouseleave', () => {
+                            console.log('Mouseleave on dropdown menu'); // Debug
+                            closeTimeout = setTimeout(() => {
+                                parent.classList.remove('active');
+                            }, 300);
+                        });
+                    }
+                });
+            },
+            setupLogo: function () {
+                const logo = document.querySelector('.header-logo img');
+                if (logo) {
+                    logo.classList.add('visible');
+                } else {
+                    console.warn('Logo not found');
+                }
+            },
+            setupStickyIcons: function () {
+                const headerIconsSticky = document.querySelector('.header-icons-sticky');
+                if (headerIconsSticky) {
+                    window.addEventListener('scroll', () => {
+                        if (window.scrollY > 50) {
+                            headerIconsSticky.classList.add('show');
+                        } else {
+                            headerIconsSticky.classList.remove('show');
+                        }
+                    });
+                } else {
+                    console.warn('Sticky icons container not found');
+                }
+            },
+            setupCart: function () {
+                const cartButtons = document.querySelectorAll('.minicart-btn');
+                const miniCart = document.querySelector('#miniCart');
+                const globalOverlay = document.querySelector('.global-overlay');
+
+                if (cartButtons.length && miniCart && globalOverlay) {
+                    cartButtons.forEach(cartButton => {
+                        cartButton.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            console.log('Cart button clicked:', cartButton); // Debug
+                            miniCart.classList.add('active');
+                            globalOverlay.classList.add('active');
+                        });
+                    });
+
+                    const closeButton = miniCart.querySelector('.button-close');
+                    if (closeButton) {
+                        closeButton.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            miniCart.classList.remove('active');
+                            globalOverlay.classList.remove('active');
+                        });
+                    }
+
+                    globalOverlay.addEventListener('click', () => {
+                        miniCart.classList.remove('active');
+                        globalOverlay.classList.remove('active');
+                    });
+                } else {
+                    console.warn('Cart elements not found:', { cartButtons: cartButtons.length, miniCart, globalOverlay });
+                }
+            }
+        };
+
+        // Khởi động
+        try {
+            customSubmenu.init();
+        } catch (error) {
+            console.error('Error initializing submenu:', error);
+        }
+    });
+</script>

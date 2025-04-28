@@ -1,0 +1,11 @@
+VN Pay Tk Mail NguyenKhanhSTM
+
+(vnp_Tmncode): J5YI4KHJ
+(vnp_HashSecret): 2NGMHMIE69LBD3T08L04JCMBE0XZWON
+(vnp_Url): http:// sandbox.vnpayment.vn/paymentv2/vpcay.html
+
+Ngân hàng        NCB
+Số thẻ   9704198526191432198
+Tên chủ thẻ   NGUYEN VAN A
+Ngày phát hành  07/15
+Mật khẩu OTP  123456

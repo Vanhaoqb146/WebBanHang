@@ -1,0 +1,56 @@
+﻿@model List<SanPham>
+
+@if (Model != null)
+{
+    foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @item.MaSp
+            </td>
+            <td>
+                @item.TenSp
+            </td>
+            <td>
+                <div class="d-flex align-items-center">
+                    <img class="img-fluid rounded" src="~/images/sanpham/@item.Anh" style="max-width: 60px" alt="img">
+                </div>
+            </td>
+
+            <td>@item.GiaBan.Value.ToString("#,##0") đ</td>
+            <td>@item.GiaGiam.Value.ToString("#,##0") đ</td>
+            <td>@item.SoLuongCo</td>
+            <td>@item.MaLoaiNavigation.TenLoai</td>
+            <td>@item.MaThNavigation.TenTh</td>
+
+
+            <td>
+                @if (item.SoLuongCo > 0)
+                {
+                    <div class="d-flex align-items-center">
+                        <div class="badge badge-success badge-dot m-r-10"></div>
+                        <div>Còn hàng</div>
+                    </div>
+                }
+                else
+                {
+                    <div class="d-flex align-items-center">
+                        <div class="badge badge-danger badge-dot m-r-10"></div>
+                        <div>Hết hàng</div>
+                    </div>
+                }
+
+            </td>
+            <td class="text-right">
+                <a class="btn btn-icon btn-hover btn-sm btn-rounded pull-right" asp-area="Admin" asp-controller="SanPhams" asp-action="Delete" asp-route-id="@item.MaSp">
+                    <i class="anticon anticon-delete"></i>
+                </a>
+
+                <a class="btn btn-icon btn-hover btn-sm btn-rounded" asp-area="Admin" asp-controller="SanPhams" asp-action="Edit" asp-route-id="@item.MaSp">
+                    <i class="anticon anticon-edit"></i>
+                </a>
+
+            </td>
+        </tr>
+    }
+}

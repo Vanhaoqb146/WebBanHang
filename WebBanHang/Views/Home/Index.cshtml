@@ -1,0 +1,272 @@
+﻿@model WebBanHang.ModelViews.HomeViewVM
+@using PagedList.Core
+@using Microsoft.AspNetCore.Routing
+@{
+    ViewData["Title"] = "Perfect Home";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Begin Slider Area -->
+<div class="slider-area">
+    <!-- Main Slider -->
+    <div class="swiper-container main-slider-2 swiper-arrow with-bg_white">
+        <div class="swiper-wrapper">
+            <!-- Banner 3 -->
+            <div class="swiper-slide animation-style-01">
+                <a href="/sanpham">
+                    <img src="~/images/banners/banner3.jpg" class="slide-inner bg-height" style="width:100%;height:60vh;" />
+                </a>
+            </div>
+            <!-- Banner 1 -->
+                <div class="swiper-slide animation-style-01">
+                    <a href="/sanpham">
+                    <img src="~/images/banners/banner1.jpg" class="slide-inner bg-height" style="width:100%;height:60vh;" />
+                </a>
+                   
+                </div>
+                    
+            <!-- Banner 2 -->
+            <div class="swiper-slide animation-style-01">
+                <a href="/sanpham">
+                    <img src="~/images/banners/banner2.jpg" class="slide-inner bg-height" style="width:100%;height:60vh;" />
+                </a>
+            </div>
+           
+           
+        </div>
+        <!-- Add Pagination -->
+        <div class="swiper-pagination with-bg d-md-none"></div>
+        <!-- Add Arrows -->
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+    </div>
+</div>
+<!-- Slider Area End Here -->
+<!-- Begin Shipping Area -->
+<div class="shipping-area section-space-top-100">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 col-md-6">
+                <div class="shipping-item">
+                    <div class="shipping-img">
+                        <img height="70px" src="~/images/banners/icon1.jpg" alt="Shipping Icon">
+                    </div>
+                    <div class="shipping-content">
+                        <h5 class="title">Giao hàng tận nhà</h5>
+                        <p class="short-desc mb-0">Miễn phí ship đơn từ 999k</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 pt-6 pt-md-0">
+                <div class="shipping-item">
+                    <div class="shipping-img">
+                        <img height="70px" src="~/images/banners/icon1.jpg" alt="Shipping Icon">
+                    </div>
+                    <div class="shipping-content">
+                        <h5 class="title">Giá quá tốt</h5>
+                        <p class="short-desc mb-0">Mức giá cực kỳ ưu đãi</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 pt-6 pt-lg-0">
+                <div class="shipping-item">
+                    <div class="shipping-img">
+                        <img height="70px" src="~/images/banners/icon1.jpg" alt="Shipping Icon">
+                    </div>
+                    <div class="shipping-content">
+                        <h5 class="title">Hàng chính hãng</h5>
+                        <p class="short-desc mb-0">Cam kết hàng 100% chính hãng</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Shipping Area End Here -->
+<!-- Begin Product Area -->
+<div class="product-area section-space-top-100">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <ul class="nav product-tab-nav pb-10" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="active" id="all-items-tab" data-bs-toggle="tab" href="#all-items" role="tab" aria-controls="all-items" aria-selected="true">
+                            <div class="product-tab-icon">
+                                <img height="70px" src="~/images/banners/icon3.jpg" alt="Product Icon" />
+                            </div>
+                            Tất cả
+                        </a>
+                    </li>
+                    @foreach (var item in Model.Products)
+                    {
+                        <li class="nav-item" role="presentation">
+                            <a id="category-@item.category.MaLoai-tab" data-bs-toggle="tab" href="#m-@item.category.MaLoai" role="tab" aria-controls="m-@item.category.MaLoai" aria-selected="false">
+                                <div class="product-tab-icon">
+                                    <img height="70px" src="~/images/banners/icon3.jpg" alt="Product Icon" />
+                                </div>
+                                @item.category.TenLoai
+                            </a>
+                        </li>
+                    }
+                </ul>
+
+                <div class="tab-content" id="myTabContent">
+                    <!-- Tab Tất cả -->
+                    <div class="tab-pane fade show active" id="all-items" role="tabpanel" aria-labelledby="all-items-tab">
+                        @await Html.PartialAsync("_ListProductPartialView.cshtml", (PagedList.Core.IPagedList<SanPham>)ViewBag.AllProducts)
+                        <!-- Phân trang -->
+                        <div class="pagination-area mt-5">
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination justify-content-center">
+                                    @if (ViewBag.AllProducts.HasPreviousPage)
+                                    {
+                                        <li class="page-item">
+                                            <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.AllProducts.PageNumber - 1 })" aria-label="Previous">
+                                                <span aria-hidden="true">«</span>
+                                            </a>
+                                        </li>
+                                    }
+                                    @for (int i = 1; i <= ViewBag.AllProducts.PageCount; i++)
+                                    {
+                                        <li class="page-item @(i == ViewBag.AllProducts.PageNumber ? "active" : "")">
+                                            <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+                                        </li>
+                                    }
+                                    @if (ViewBag.AllProducts.HasNextPage)
+                                    {
+                                        <li class="page-item">
+                                            <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.AllProducts.PageNumber + 1 })" aria-label="Next">
+                                                <span aria-hidden="true">»</span>
+                                            </a>
+                                        </li>
+                                    }
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+
+                    <!-- Các tab danh mục -->
+                    @foreach (var item in Model.Products)
+                    {
+                        <div class="tab-pane fade" id="m-@item.category.MaLoai" role="tabpanel" aria-labelledby="category-@item.category.MaLoai-tab">
+                            
+                            @await Html.PartialAsync("_ListProductPartialView.cshtml", item.lsProducts)
+                            <!-- Phân trang -->
+                            
+                                <div class="pagination-area mt-5">
+                                    <nav aria-label="Page navigation">
+                                        <ul class="pagination justify-content-center">
+                                            @if (item.lsProducts.HasPreviousPage)
+                                            {
+                                                <li class="page-item">
+                                                    <a class="page-link" href="@Url.Action("Index", new RouteValueDictionary { { "page", ViewBag.AllProducts.PageNumber }, { $"page_{item.category.MaLoai}", item.lsProducts.PageNumber - 1 } })" aria-label="Previous">
+                                                        <span aria-hidden="true">«</span>
+                                                    </a>
+                                                </li>
+                                            }
+                                            @for (int i = 1; i <= item.lsProducts.PageCount; i++)
+                                            {
+                                                <li class="page-item @(i == item.lsProducts.PageNumber ? "active" : "")">
+                                                    <a class="page-link" href="@Url.Action("Index", new RouteValueDictionary { { "page", ViewBag.AllProducts.PageNumber }, { $"page_{item.category.MaLoai}", i } })">@i</a>
+                                                </li>
+                                            }
+                                            @if (item.lsProducts.HasNextPage)
+                                            {
+                                                <li class="page-item">
+                                                    <a class="page-link" href="@Url.Action("Index", new RouteValueDictionary { { "page", ViewBag.AllProducts.PageNumber }, { $"page_{item.category.MaLoai}", item.lsProducts.PageNumber + 1 } })" aria-label="Next">
+                                                        <span aria-hidden="true">»</span>
+                                                    </a>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </nav>
+                                </div>
+                            
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Product Area End Here -->
+<!-- Begin Blog Area -->
+<div class="blog-area section-space-y-axis-100">
+</div>
+<!-- Blog Area End Here -->
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            function loadHeaderCart() {
+                var timestamp = new Date().getTime();
+                if ($("#miniCart").length === 0) {
+                    console.error("Element #miniCart not found in DOM.");
+                    return;
+                }
+                $("#miniCart").load("/AjaxContent/HeaderCart?_=" + timestamp, function (response, status, xhr) {
+                    if (status === "success") {
+                        console.log("Mini cart updated successfully.");
+                    } else {
+                        console.error("Failed to update mini cart:", xhr.statusText);
+                    }
+                });
+                $("#numberCart").load("/AjaxContent/NumberCart?_=" + timestamp, function (response, status, xhr) {
+                    if (status === "success") {
+                        console.log("Cart quantity updated successfully.");
+                    } else {
+                        console.error("Failed to update cart quantity:", xhr.statusText);
+                    }
+                });
+            }
+
+            $(".add-to-cart").click(function () {
+                var productid = $(this).siblings('.product-id').val();
+                var soLuong = $(this).siblings('.product-quantity').val();
+
+                $.ajax({
+                    url: '/api/cart/add',
+                    datatype: "json",
+                    type: "POST",
+                    data: {
+                        productID: productid,
+                        amount: soLuong
+                    },
+                    success: function (response) {
+                        loadHeaderCart();
+                        alert("Sản phẩm đã được thêm vào giỏ hàng!");
+                        location.reload();
+                    },
+                    error: function (error) {
+                        alert("Lỗi khi thêm sản phẩm vào giỏ hàng: " + error.responseText);
+                    }
+                });
+            });
+
+            jQuery("#sort_pros").change(function () {
+                var sx = jQuery(this).children(":selected").attr("value");
+                sx = parseFloat(sx);
+
+                $('#sort_pros option').removeAttr('selected');
+                $("#sort_pros > [value=" + sx + "]").attr("selected", "true");
+
+                $.ajax({
+                    url: 'sanpham/sort',
+                    datatype: "json",
+                    type: "GET",
+                    data: {
+                        sort: sx,
+                    },
+                    async: true,
+                    success: function (results) {
+                        if (results.status == "success") {
+                            window.location.href = results.redirectUrl;
+                        }
+                    },
+                    error: function (xhr) {
+                        alert('Lỗi khi sắp xếp sản phẩm.');
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -1,0 +1,138 @@
+﻿@model WebBanHang.Models.KhachHang
+
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<DonHang> DanhSachDonHang = ViewBag.DonHang;
+    WebBanHang.ModelViews.ChangeInfoVM changeInfo = new WebBanHang.ModelViews.ChangeInfoVM()
+            {
+                FullName = Model.TenKh,
+                Phone = Model.Sdt,
+                Address = Model.DiaChi,
+                Email = Model.Email
+            };
+}
+
+<!-- Begin Main Content Area -->
+<main class="main-content">
+    <div class="breadcrumb-area breadcrumb-height" style="height:150px;background-color:#E3F0E1">
+        <div class="container h-100">
+            <div class="row h-100">
+                <div class="col-lg-12">
+                    <div class="breadcrumb-item">
+                        <h2 class="breadcrumb-heading" style="font-family:Verdana">Tài khoản</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="account-page-area section-space-y-axis-100">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3">
+                    <ul class="nav myaccount-tab-trigger" id="account-page-tab" role="tablist">
+                        @*<li class="nav-item">
+                            <a class="nav-link " id="account-dashboard-tab" data-bs-toggle="tab" href="#account-dashboard" role="tab" aria-controls="account-dashboard" aria-selected="false">Dashboard</a>
+                        </li>*@
+                        <li class="nav-item">
+                            <a class="nav-link active" id="account-orders-tab" data-bs-toggle="tab" href="#account-orders" role="tab" aria-controls="account-orders" aria-selected="true">Đơn hàng</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="account-details-tab" data-bs-toggle="tab" href="#account-details" role="tab" aria-controls="account-details" aria-selected="false">Thông tin tài khoản</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="account-logout-tab" href="/dangxuat" role="tab" aria-selected="false">Đăng xuất</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-lg-9">
+                    <div class="tab-content myaccount-tab-content" id="account-page-tab-content">
+                        @*<div class="tab-pane fade" id="account-dashboard" role="tabpanel" aria-labelledby="account-dashboard-tab">
+                            <div class="myaccount-dashboard">
+                                <p>
+                                    Xin chào, <b>@Model.TenKh</b>
+                                </p>
+                            </div>
+                        </div>*@
+                        <div class="tab-pane fade show active" id="account-orders" role="tabpanel" aria-labelledby="account-orders-tab">
+                            <div class="myaccount-orders">
+                                
+                                @if (DanhSachDonHang != null && DanhSachDonHang.Count() > 0)
+                                {
+                                    <div id="records_table">
+                                    </div>
+                                    
+
+                                    <h5 style="font-family:Verdana">Danh sách đơn hàng</h5>
+                                    <div class="table-responsive">
+                                        
+                                        <table class="table table-bordered table-hover">
+                                            <tbody>
+                                                <tr>
+                                                    <th>Mã đơn hàng</th>
+                                                    <th>Ngày đặt</th>
+                                                    <th>Trạng thái</th>
+                                                    <th>Tổng tiền</th>
+                                                    <th></th>
+                                                </tr>
+                                                @foreach (var item in DanhSachDonHang)
+                                                {
+                                                    <tr>
+                                                        <td><a class="account-order-id" href="javascript:void(0)">#@item.MaDh</a></td>
+                                                        <td>@item.NgayDat</td>
+                                                        <td>@item.MaTtNavigation.TenTt</td>
+                                                        <td>@item.TongTien.Value.ToString("#,##0") đ</td>
+                                                        <td>
+                                                            <a href="javascript:void(0)" data-madonhang="@item.MaDh" class="xemdonhang btn btn-secondary btn-primary-hover"><span>Xem</span></a>
+                                                        </td>
+                                                    </tr>
+                                                }
+
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+                                }
+                                else
+                                {
+                                    <h5 style="font-family:Verdana">Danh sách đơn hàng</h5>
+                                    <p>Chưa có đơn hàng!</p>
+                                }
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="account-details" role="tabpanel" aria-labelledby="account-details-tab">
+                            @await Html.PartialAsync("_ChangeInfoPartialView.cshtml", changeInfo)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<!-- Main Content Area End Here -->
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            $(".xemdonhang").click(function () {
+                var madonhang = $(this).attr("data-madonhang");
+
+                $.ajax({
+                    url: '/DonHang/Details',
+                    datatype: "json",
+                    type: "POST",
+                    data: {
+                        id: madonhang,
+                    },
+                    async: true,
+                    success: function (results) {
+                        $("#records_table").html("");
+                        $("#records_table").html(results);
+                    },
+                    error: function (xhr) {
+                        alert("Lỗi");
+                    }
+                });
+            });
+        });
+    </script>
+}

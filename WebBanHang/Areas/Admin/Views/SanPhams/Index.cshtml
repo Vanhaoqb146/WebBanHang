@@ -1,0 +1,189 @@
+﻿@using PagedList.Core.Mvc
+@model PagedList.Core.IPagedList<WebBanHang.Models.SanPham>
+
+@{
+    int CurrentPage = ViewBag.CurrentPage;
+    ViewData["Title"] = "QL sản phẩm ";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="page-header">
+    <h2 class="header-title">Quản lý sản phẩm</h2>
+    <div class="header-sub-title">
+        <nav class="breadcrumb breadcrumb-dash">
+            <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="breadcrumb-item"><i class="anticon anticon-home m-r-5"></i>Home</a>
+            <span class="breadcrumb-item active">Danh sách sản phẩm</span>
+        </nav>
+    </div>
+</div>
+<div class="card">
+    <div class="card-body">
+        <div class="row m-b-30">
+            <div class="col-lg-8">
+                <div class="d-md-flex">
+                    <div class="m-b-10 m-r-15">
+                        <select class="custom-select" style="min-width: 160px;" id="txtMaLoai" name="txtMaLoai" asp-items="ViewBag.LoaiSP">
+                            <option selected>-Chọn loại SP-</option>
+                            <option value="0">Tất cả</option>
+                        </select>
+                    </div>
+                    @*<div class="m-b-10 m-r-15">
+                        <select class="custom-select" style="min-width: 170px;" id="txtStt" name="txtStt" asp-items="ViewBag.lsQuantityStt">
+                            <option selected>-Chọn trạng thái-</option>
+                            <option value="0">Tất cả</option>
+                        </select>
+                    </div>*@
+                    <div class="m-b-10 ">
+                        <div class="input-affix" style="min-width: 200px;">
+                            <i class="prefix-icon anticon anticon-search opacity-04"></i>
+                            <input id="searchKey" name="searchKey" type="text" class="form-control" placeholder="Tìm tên sản phẩm">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-lg-4 text-right">
+                <a class="btn btn-primary" asp-area="Admin" asp-controller="SanPhams" asp-action="Create">
+                    <i class="anticon anticon-plus-circle m-r-5"></i>
+                    <span>Thêm mới</span>
+                </a>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover e-commerce-table">
+                <thead>
+                    <tr>
+                        <th style="font-weight:bold">ID</th>
+                        <th style="font-weight:bold">Tên</th>
+                        <th style="font-weight:bold">Ảnh</th>
+                        <th style="font-weight:bold">Giá bán</th>
+                        <th style="font-weight:bold">Giảm giá</th>
+                        <th style="font-weight:bold">Số lượng</th>
+
+                        <th style="font-weight:bold">Loại</th>
+                        <th style="font-weight:bold">Thương hiệu</th>
+                        <th style="font-weight:bold">Trạng thái</th>
+                        <th style="font-weight:bold">#</th>
+                    </tr>
+                </thead>
+                <tbody id="records_table">
+                    @if (Model != null)
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td style="font-weight:bold">
+                                    @item.MaSp
+                                </td>
+                                <td>
+                                    @item.TenSp
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img class="img-fluid rounded" src="~/images/sanpham/@item.Anh" style="max-width: 60px" alt="img">
+                                    </div>
+                                </td>
+
+                                <td>@item.GiaBan.Value.ToString("#,##0") đ</td>
+                                <td>@item.GiaGiam.Value.ToString("#,##0") đ</td>
+                                <td>@item.SoLuongCo</td>
+                                <td>@item.MaLoaiNavigation.TenLoai</td>
+                                <td>@item.MaThNavigation.TenTh</td>
+
+
+                                <td>
+                                    @if (item.SoLuongCo > 0)
+                                    {
+                                        <div class="d-flex align-items-center">
+                                            <div class="badge badge-success badge-dot m-r-10"></div>
+                                            <div>Còn hàng</div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="d-flex align-items-center">
+                                            <div class="badge badge-danger badge-dot m-r-10"></div>
+                                            <div>Hết hàng</div>
+                                        </div>
+                                    }
+
+                                </td>
+                                <td class="text-right">
+                                    <a class="btn btn-icon btn-hover btn-sm btn-rounded pull-right" asp-area="Admin" asp-controller="SanPhams" asp-action="Delete" asp-route-id="@item.MaSp">
+                                        <i class="anticon anticon-delete"></i>
+                                    </a>
+
+                                    <a class="btn btn-icon btn-hover btn-sm btn-rounded" asp-area="Admin" asp-controller="SanPhams" asp-action="Edit" asp-route-id="@item.MaSp">
+                                        <i class="anticon anticon-edit"></i>
+                                    </a>
+
+                                </td>
+                            </tr>
+                        }
+                    }
+
+                </tbody>
+            </table>
+
+            <div aria-label="Page navigation example">
+                <ul class="pagination">
+                    <pager class="pager-container" list="@Model" asp-area="Admin" asp-controller="SanPhams" asp-action="Index" asp-route-MaLoai="@ViewBag.CurrentMaLoai" />
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        $(document).ready(function(){
+            jQuery("#txtMaLoai").change(function () {
+                var ml = jQuery(this).children(":selected").attr("value");
+                ml = parseFloat(ml);
+
+                $('#txtMaLoai option')
+                    .removeAttr('selected');
+                $("#txtMaLoai > [value=" + ml + "]").attr("selected", "true");
+
+                $.ajax({
+                    url: '/Admin/SanPhams/Filter',
+                    datatype: "json",
+                    type: "GET",
+                    data:{
+                        MaLoai : ml,
+                    },
+                    async: true,
+                    success: function(results){
+                        if (results.status == "success") {
+                            window.location.href = results.redirectUrl;
+                        }
+                    },
+                    error: function(xhr){
+                        alert('error');
+                    }
+                });
+            });
+
+            $("#searchKey").keyup(function () {
+                var strSearchKey = $("#searchKey").val();
+                $.ajax({
+                    url: '/Admin/Search/TimSanPham/',
+                    datatype: "json",
+                    type: "POST",
+                    data: {
+                        searchKey: strSearchKey
+                    },
+                    async: true,
+                    success: function (results) {
+                        //$('#loader').hide();
+                        $('#records_table').html("");
+                        $('#records_table').html(results);
+                    },
+                    error: function (xhr) {
+                        alert('error');
+                    }
+                });
+            });
+        });
+    </script>
+}

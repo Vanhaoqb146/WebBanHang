@@ -1,0 +1,32 @@
+﻿@model List<WebBanHang.ModelViews.CartItem>
+
+<div class="harmic-offcanvas-body">
+    <div class="minicart-content">
+        <div class="minicart-heading">
+            <h4 style="font-family:Verdana" class="mb-0">Giỏ hàng</h4>
+            <a href="#" class="button-close"><i class="pe-7s-close"></i></a>
+        </div>
+        <ul class="minicart-list">
+            @foreach (var item in Model)
+            {
+                <li class="minicart-product">
+                    <a href="shop.html" class="product-item_img">
+                        <img class="img-full" src="~/images/sanpham/@item.product.Anh" alt="Product Image">
+                    </a>
+                    <div class="product-item_content">
+                        <a class="product-item_title" href="/sanpham/@item.product.MaSp">@item.product.TenSp</a>
+                        <span class="product-item_quantity">@item.amount x @item.product.GiaGiam.Value.ToString("#,##0") đ</span>
+                    </div>
+                </li>
+            }
+        </ul>
+    </div>
+    <div class="minicart-item_total">
+        <span>Tổng tiền</span>
+        <span class="ammount"><strong>@Model.Sum(x => x.TotalMoney).ToString("#,##0") đ</strong></span>
+    </div>
+    <div class="group-btn_wrap d-grid gap-2">
+        <a href="/cart" class="btn btn-secondary btn-primary-hover">Xem giỏ hàng</a>
+        <a href="/checkout" class="btn btn-secondary btn-primary-hover">Đặt hàng</a>
+    </div>
+</div>

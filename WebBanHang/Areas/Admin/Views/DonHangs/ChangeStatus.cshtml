@@ -1,0 +1,241 @@
+﻿@model WebBanHang.Models.DonHang
+
+@{
+    ViewData["Title"] = "Trạng thái đơn hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    List<ChiTietDonHang> ctDH = ViewBag.ChiTiet;
+
+}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+
+<div class="page-header">
+    <h2 class="header-title">Quản lý đơn hàng</h2>
+    <div class="header-sub-title">
+        <nav class="breadcrumb breadcrumb-dash">
+            <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="breadcrumb-item"><i class="anticon anticon-home m-r-5"></i>Home</a>
+            <a asp-area="Admin" asp-controller="DonHangs" asp-action="Index" class="breadcrumb-item">Đơn hàng</a>
+            <span class="breadcrumb-item active">Trạng thái đơn hàng</span>
+        </nav>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="row m-b-30">
+            <div class="col-lg-4">
+                <a class="btn btn-success" asp-area="Admin" asp-controller="DonHangs" asp-action="InHoaDon" asp-route-id="@Model.MaDh">
+                    <i class="anticon anticon-file-text m-r-5"></i>
+                    <span>In hóa đơn</span>
+                </a>
+            </div>
+        </div>
+
+        <div id="invoice" class="p-h-30">
+
+            <div class="row m-t-20 lh-2">
+                <div class="col-sm-6">
+                    <div class="card">
+                        <div class="card-body" style="height:270px">
+                            <h4 class="p-l-10 m-t-10">Thông tin đơn hàng:</h4>
+                            <address class="p-l-10 m-t-10">
+                                <span class="font-weight-semibold text-dark">MÃ ĐƠN HÀNG: #@Model.MaDh</span><br>
+                                <span class="font-weight-semibold text-dark">Hình thức thanh toán: @Model.PhuongThucThanhToan</span><br>
+                                <span class="font-weight-semibold text-dark">Khách hàng: @Model.MaKhNavigation.TenKh (SĐT: @Model.Sdt)</span><br>
+                                <span class="font-weight-semibold text-dark">Ngày đặt: @Model.NgayDat</span><br>
+                                <span class="font-weight-semibold text-dark">Địa chỉ: @ViewBag.FullAddress</span><br>
+                            </address>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-sm-6 ">
+                    <div class="card">
+                        <div class="card-body" style="height:270px">
+                            <h4 class="p-l-10 m-t-10">Thông tin giao hàng:</h4>
+                            <address class="p-l-10 m-t-10">
+                                <form asp-controller="DonHangs" asp-action="ChangeStatusPost" asp-route-id="@Model.MaDh" method="post">
+                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                    <input type="hidden" asp-for="MaDh" />
+
+
+                                    <div class="form-group row">
+                                        <label class="col-sm-5 col-form-label">Trạng thái đơn hàng:</label>
+                                        <div class="col-sm-7">
+                                            @if (Model.MaTt == 2)
+                                            {
+                                                <select class="custom-select" asp-for="MaTt">
+                                                    <option value="0" disabled selected>-Chọn trạng thái-</option>
+                                                    @foreach (var item in ViewBag.lsTrangThai)
+                                                    {
+                                                        if (item.Value == "1" || item.Value == "4" || item.Value == "5")
+                                                        {
+                                                            <option disabled value="@item.Value">@item.Text</option>
+
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="@item.Value">@item.Text</option>
+                                                        }
+                                                    }
+                                                </select>
+                                            }
+                                            else if (Model.MaTt == 3)
+                                            {
+                                                <select class="custom-select" asp-for="MaTt">
+                                                    <option value="0" disabled selected>-Chọn trạng thái-</option>
+                                                    @foreach (var item in ViewBag.lsTrangThai)
+                                                    {
+                                                        if (item.Value == "1" || item.Value == "2" || item.Value == "4" || item.Value == "5" || item.Value == "6")
+                                                        {
+                                                            <option disabled value="@item.Value">@item.Text</option>
+
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="@item.Value">@item.Text</option>
+                                                        }
+                                                    }
+                                                </select>
+                                            }
+                                            else
+                                            {
+                                                <select class="custom-select" asp-for="MaTt">
+                                                    <option value="0" disabled selected>-Chọn trạng thái-</option>
+                                                    @foreach (var item in ViewBag.lsTrangThai)
+                                                    {
+                                                        if (item.Value == "4" || item.Value == "5")
+                                                        {
+                                                            <option disabled value="@item.Value">@item.Text</option>
+
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="@item.Value">@item.Text</option>
+                                                        }
+                                                    }
+                                                </select>
+                                            }
+
+                                        </div>
+                                       
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-5 col-form-label">Shipper:</label>
+                                        <div class="col-sm-7">
+                                            <select class="select2" asp-for="MaShipper" asp-items="ViewBag.Shipper">
+                                                <option value="0" disabled selected>-Chọn shipper-</option>
+                                            </select>
+
+                                        </div>
+                                    </div>
+
+                                    @if (Model.MaTt == 1 || Model.MaTt == 2 || Model.MaTt == 3)
+                                    {
+                                        <div class="form-group row">
+                                            <div class="col-sm-5">
+                                                <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        @if (Model.MaTt == 4)
+                                        {
+                                            <div class="form-group row">
+                                                <label class="col-sm-5 col-form-label">Ngày giao:</label>
+                                                <label class="col-sm-7 col-form-label">@Model.NgayShip</label>
+                                                @*<div class="col-sm-5">
+                                                    <button disabled type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                                                </div>*@
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="form-group row">
+                                                <div class="col-sm-5">
+                                                    <button disabled type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                                                </div>
+                                            </div>
+                                        }
+
+                                    }
+
+                                </form>
+                            </address>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="m-t-20">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Sản phẩm</th>
+                                <th>Số lượng</th>
+                                <th>Đơn giá</th>
+                                <th>Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (ctDH != null && ctDH.Count() > 0)
+                            {
+                                foreach (var item in ctDH)
+                                {
+                                    int i = 1;
+                                    <tr>
+                                        <th>@i</th>
+                                        <td>@item.MaSpNavigation.TenSp</td>
+                                        <td>@item.SoLuong</td>
+                                        <td>@item.GiaGiam.Value.ToString("#,##0") đ</td>
+                                        <td>@item.TongTien.Value.ToString("#,##0") đ</td>
+                                    </tr>
+                                    i++;
+                                }
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row m-t-30 lh-1-8">
+                    <div class="col-sm-12">
+                        <div class="float-right text-right">
+                            <p class="font-weight-semibold text-dark">Tạm tính: @Model.TongTien.Value.ToString("#,##0") đ</p>
+                            <p class="font-weight-semibold text-dark">Giảm giá: @Model.GiamGia.Value.ToString("#,##0") đ</p>
+                            <p class="font-weight-semibold text-dark">
+                                Phí giao hàng:
+                                @{
+                                    var pgh = Model.TienShip - Model.GiamGiaShip;
+                                }
+                                @pgh.Value.ToString("#,##0") đ
+                            </p>
+                            <hr>
+                            <h4><span class="font-weight-semibold text-dark">Tổng cộng :</span> @Model.TongTien.Value.ToString("#,##0") đ</h4>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <!-- page js -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+
+    <script>
+        $(document).ready(function () {
+            $('.select2').select2();
+        });
+    </script>
+
+
+}
+
+

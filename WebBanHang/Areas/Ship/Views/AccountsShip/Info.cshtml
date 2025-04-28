@@ -1,0 +1,65 @@
+﻿@model WebBanHang.Models.Shipper
+@{
+    ViewData["Title"] = "Info";
+    Layout = "~/Areas/Ship/Views/Shared/_ShipperLayout.cshtml";
+}
+
+<div class="page-header no-gutters has-tab">
+    <h2 class="font-weight-normal">Thông tin tài khoản</h2>
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#tab-account">Tài khoản</a>
+        </li>
+    </ul>
+</div>
+<div class="container">
+    <div class="tab-content m-t-15">
+        <div class="tab-pane fade show active" id="tab-account">
+            <div class="card">
+                <div class="card-body">
+                    <form asp-action="Info">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input type="hidden" asp-for="MaShipper" />
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="control-label">Tên</label>
+                                <input style="background-color:#F7F9F9;" readonly asp-for="TenShipper" class="form-control" />
+                                <span asp-validation-for="TenShipper" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-3">
+                                <label class="control-label">SĐT</label>
+                                <input style="background-color:#F7F9F9;" asp-for="Sdt" readonly class="form-control" />
+                                <span asp-validation-for="Sdt" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label class="control-label">Email</label>
+                                <input style="background-color:#F7F9F9;" asp-for="Email" readonly class="form-control" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-3">
+                                <label class="font-weight-semibold">Mật khẩu cũ</label>
+                                <input name="MKC" type="password" class="form-control" placeholder="Mật khẩu cũ">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label class="font-weight-semibold">Mật khẩu mới</label>
+                                <input name="MKM" type="password" class="form-control" placeholder="Mật khẩu mới">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label class="font-weight-semibold">Nhập lại mật khẩu mới</label>
+                                <input name="NLMKM" type="password" class="form-control" placeholder="Nhập lại mật khẩu mới">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <input type="submit" value="Lưu" class="btn btn-primary" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

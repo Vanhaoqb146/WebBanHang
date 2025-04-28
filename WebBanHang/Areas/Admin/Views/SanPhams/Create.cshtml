@@ -1,0 +1,144 @@
+﻿@model WebBanHang.Models.SanPham
+
+@{
+    ViewData["Title"] = "Thêm mới";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+<div class="page-header">
+    <h2 class="header-title">Quản lý sản phẩm</h2>
+    <div class="header-sub-title">
+        <nav class="breadcrumb breadcrumb-dash">
+            <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="breadcrumb-item"><i class="anticon anticon-home m-r-5"></i>Home</a>
+            <a asp-area="Admin" asp-controller="SanPhams" asp-action="Index" class="breadcrumb-item">Sản phẩm</a>
+            <span class="breadcrumb-item active">Thêm sản phẩm</span>
+        </nav>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Tạo mới sản phẩm</h4>
+        <form asp-controller="SanPhams" asp-action="Create" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Tên</label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" asp-for="TenSp" placeholder="Tên sản phẩm">
+                    <span asp-validation-for="TenSp" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Giá bán</label>
+                <div class="col-sm-2">
+                    <input type="text" class="form-control" asp-for="GiaBan" placeholder="Giá bán">
+                    <span asp-validation-for="GiaBan" class="text-danger"></span>
+                </div>
+
+                <label class="col-sm-1 offset-sm-1 col-form-label">Giá giảm</label>
+                <div class="col-sm-2">
+                    <input type="text" class="form-control" asp-for="GiaGiam" placeholder="Giá giảm">
+                    <span asp-validation-for="GiaGiam" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Số lượng</label>
+                <div class="col-sm-2">
+                    <input type="text" class="form-control" asp-for="SoLuongCo" placeholder="Số lượng">
+                    <span asp-validation-for="SoLuongCo" class="text-danger"></span>
+                </div>
+            </div>
+            @*Ảnh*@
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Ảnh</label>
+                <div class="col-sm-4">
+                    <input type="file" id="fAnh" name="fAnh" class="form-control" asp-for="Anh">
+                    @*<span asp-validation-for="Anh" class="text-danger"></span>*@
+                </div>
+
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label"></label>
+                <div class="col-sm-1">
+                    <div class="d-flex align-items-center">
+                        <img id="image_upload_preview" class="img-fluid img-thumbnail" src="~/images/sanpham/default.jpg" style="max-width:100px" alt="img">
+                    </div>
+                </div>
+            </div>
+            @*Ảnh*@
+            @* <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Công suất (W)</label>
+                <div class="col-sm-2">
+                    <input type="text" class="form-control" asp-for="CongSuat" placeholder="Công suất">
+                    <span asp-validation-for="CongSuat" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Khối lượng (Kg)</label>
+                <div class="col-sm-2">
+                    <input type="text" class="form-control" asp-for="KhoiLuong" placeholder="Khối lượng">
+                    <span asp-validation-for="KhoiLuong" class="text-danger"></span>
+                </div>
+            </div> *@
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Bảo hành (tháng)</label>
+                <div class="col-sm-2">
+                    <input type="text" class="form-control" asp-for="BaoHanh" placeholder="Bảo hành">
+                    <span asp-validation-for="BaoHanh" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Mô tả</label>
+                <div class="col-sm-6">
+                    <textarea rows="7" class="form-control" asp-for="MoTa" placeholder="Mô tả"></textarea>
+                    <span asp-validation-for="MoTa" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Loại sản phẩm</label>
+                <div class="col-sm-3">
+                    <select class="custom-select" asp-for="MaLoai" asp-items="ViewBag.LoaiSP">
+                        <option value="" disabled selected>-Chọn loại sp-</option>
+                    </select>
+                    <span asp-validation-for="MaLoai" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Thương hiệu</label>
+                <div class="col-sm-3">
+                    <select class="custom-select" asp-for="MaTh" asp-items="ViewBag.ThuongHieu">
+                        <option value="" disabled selected>-Chọn thương hiệu-</option>
+                    </select>
+                    <span asp-validation-for="MaTh" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-sm-5">
+                    <button type="submit" class="btn btn-primary">Thêm</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#image_upload_preview').attr('src', e.target.result);
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        $("#fAnh").change(function () {
+            readURL(this);
+        });
+
+    </script>
+}

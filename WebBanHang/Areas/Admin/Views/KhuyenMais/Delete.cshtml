@@ -1,0 +1,76 @@
+﻿@model WebBanHang.Models.KhuyenMai
+
+@{
+    ViewData["Title"] = "Delete";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="page-header">
+    <h2 class="header-title">Quản lý khuyến mại</h2>
+    <div class="header-sub-title">
+        <nav class="breadcrumb breadcrumb-dash">
+            <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="breadcrumb-item"><i class="anticon anticon-home m-r-5"></i>Home</a>
+            <a asp-area="Admin" asp-controller="KhuyenMais" asp-action="Index" class="breadcrumb-item">Danh sách khuyến mại</a>
+            <span class="breadcrumb-item active">Xóa khuyến mại</span>
+        </nav>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Xóa khuyến mại</h4>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">ID</label>
+            <div class="col-sm-2">
+                <input style="background-color:#F7F9F9;" type="text" readonly class="form-control" asp-for="MaKm" placeholder="ID">
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Mã nhập</label>
+            <div class="col-sm-2">
+                <input style="background-color:#F7F9F9;" type="text" readonly class="form-control" asp-for="MaNhap" placeholder="ID">
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Mô tả</label>
+            <div class="col-sm-5">
+                <textarea style="background-color:#F7F9F9;" rows="5" class="form-control" asp-for="MoTa" readonly placeholder="Mô tả"></textarea>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Giá trị giảm</label>
+            <div class="col-sm-3">
+                <input style="background-color:#F7F9F9;" type="text" class="form-control" asp-for="GiaTriGiam" readonly placeholder="Giá trị giảm">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Giá trị tối thiểu</label>
+            <div class="col-sm-3">
+                <input style="background-color:#F7F9F9;" type="text" class="form-control" asp-for="GiaTriToiThieu" readonly placeholder="Giá trị tối thiểu">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Ngày bắt đầu</label>
+            <div class="col-sm-3">
+                <input style="background-color:#F7F9F9;" class="form-control" asp-for="NgayBatDau" readonly placeholder="Ngày bắt đầu">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Ngày kết thúc</label>
+            <div class="col-sm-3">
+                <input style="background-color:#F7F9F9;" class="form-control" asp-for="NgayKetThuc" readonly placeholder="Ngày kết thúc">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Bạn có chắc muốn xóa?</label>
+            <div class="col-sm-3">
+                <form asp-area="Admin" asp-action="Delete" asp-route-id="@Model.MaKm">
+                    <input type="hidden" asp-for="MaKm" />
+                    <input type="submit" value="Xác nhận xóa" class="btn btn-danger" />
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

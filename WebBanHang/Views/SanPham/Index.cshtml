@@ -1,0 +1,326 @@
+﻿@using PagedList.Core.Mvc
+@model PagedList.Core.IPagedList<WebBanHang.Models.SanPham>
+@{
+    ViewData["Title"] = "Sản phẩm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int CurrentPage = ViewBag.CurrentPage;
+    int PageNext = CurrentPage + 1;
+    List<LoaiSanPham> dmsp = ViewBag.DMSP;
+    List<SanPham> spm = ViewBag.SPM;
+
+    // Chuẩn bị dictionary cho các tham số truy vấn
+    var routeData = new Dictionary<string, string>
+    {
+        { "searchKey", ViewBag.SearchKey?.ToString() },
+        { "sort", ViewBag.Sort?.ToString() },
+        { "priceRange", ViewBag.PriceRange?.ToString() },
+        { "minPrice", ViewBag.MinPrice?.ToString() },
+        { "maxPrice", ViewBag.MaxPrice?.ToString() }
+    };
+}
+
+<!-- Begin Main Content Area -->
+<main class="main-content">
+    <div class="breadcrumb-area breadcrumb-height" style="height:150px;background-color:#E3F0E1">
+        <div class="container h-100">
+            <div class="row h-100">
+                <div class="col-lg-12">
+                    <div class="breadcrumb-item">
+                        <h2 class="breadcrumb-heading" style="font-family:Verdana">Sản phẩm</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="shop-area section-space-y-axis-100">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 order-lg-1 order-2 pt-10 pt-lg-0">
+                    <div class="sidebar-area">
+                        <!-- Form tìm kiếm và lọc -->
+                        <form asp-controller="SanPham" asp-action="Index" method="get" id="filterForm">
+                            <!-- Thêm input hidden cho sort -->
+                            <input type="hidden" name="sort" value="@ViewBag.Sort" />
+                            <!-- Thanh tìm kiếm đã được loại bỏ khỏi vị trí này -->
+                            <div class="widgets-searchbox mb-9">
+
+                            </div>
+                            @await Html.PartialAsync("_DMSPPartialView.cshtml", dmsp)
+
+                            <div class="widgets-area mb-9">
+                                <h2 class="widgets-title mb-5">Mức giá</h2>
+                                <div class="price-filter">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="priceRange" value="all" id="priceAll" @(ViewBag.PriceRange == "all" ? "checked" : "")>
+                                        <label class="form-check-label" for="priceAll">Tất cả</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="priceRange" value="0-10000000" id="priceUnder10" @(ViewBag.PriceRange == "0-10000000" ? "checked" : "")>
+                                        <label class="form-check-label" for="priceUnder10">Dưới 10 triệu</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="priceRange" value="10000000-15000000" id="price10To15" @(ViewBag.PriceRange == "10000000-15000000" ? "checked" : "")>
+                                        <label class="form-check-label" for="price10To15">Từ 10 - 15 triệu</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="priceRange" value="15000000-20000000" id="price15To20" @(ViewBag.PriceRange == "15000000-20000000" ? "checked" : "")>
+                                        <label class="form-check-label" for="price15To20">Từ 15 - 20 triệu</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="priceRange" value="20000000-25000000" id="price20To25" @(ViewBag.PriceRange == "20000000-25000000" ? "checked" : "")>
+                                        <label class="form-check-label" for="price20To25">Từ 20 - 25 triệu</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="priceRange" value="25000000-30000000" id="price25To30" @(ViewBag.PriceRange == "25000000-30000000" ? "checked" : "")>
+                                        <label class="form-check-label" for="price25To30">Từ 25 - 30 triệu</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="priceRange" value="30000000-" id="priceAbove30" @(ViewBag.PriceRange == "30000000-" ? "checked" : "")>
+                                        <label class="form-check-label" for="priceAbove30">Trên 30 triệu</label>
+                                    </div>
+                                </div>
+                                <div class="price-slider mt-4">
+                                    <label for="customPriceRange">Hoặc nhập khoảng giá:</label>
+                                    <div class="d-flex align-items-center">
+                                        <input type="number" class="form-control me-2" name="minPrice" placeholder="Từ" min="0" value="@ViewBag.MinPrice">
+                                        <span>~</span>
+                                        <input type="number" class="form-control ms-2" name="maxPrice" placeholder="Đến" min="0" value="@ViewBag.MaxPrice">
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary mt-3">Lọc</button>
+                            </div>
+                            
+                            <!-- Thêm khoảng cách cho phần "Sản phẩm mới" -->
+                            <div class="widgets-area mb-9 mt-5">
+                                <h2 class="widgets-title mb-5">Sản phẩm mới</h2>
+                                <div class="widgets-item">
+                                    <div class="swiper-container widgets-list-slider">
+                                        <div class="swiper-wrapper">
+                                            <div class="swiper-slide">
+                                                @foreach (var item in spm)
+                                                {
+                                                    <div class="product-list-item">
+                                                        <div class="product-img img-zoom-effect">
+                                                            <a href="sanpham/@item.MaSp">
+                                                                <img class="img-full" src="~/images/sanpham/@item.Anh" alt="Product Images">
+                                                            </a>
+                                                            <div class="product-add-action">
+                                                                <ul>
+                                                                    <li class="add-to-cart">
+                                                                        <a href="javascript:void(0)">
+                                                                            <i class="pe-7s-cart"></i>
+                                                                        </a>
+                                                                        <input hidden id="MaSp" name="MaSp" value="@item.MaSp" />
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                        <div class="product-content">
+                                                            <a class="product-name" href="sanpham/@item.MaSp">@item.TenSp</a>
+                                                            <div class="price-box pb-1">
+                                                                <span class="old-price text-dark">@item.GiaBan.Value.ToString("#,##0") đ</span>
+                                                                <span class="new-price text-danger">@item.GiaGiam.Value.ToString("#,##0") đ</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-lg-9 order-lg-2 order-1">
+                    <div class="product-topbar">
+                        <ul>
+                            <li class="product-view-wrap">
+                                <ul class="nav" role="tablist">
+                                    <li class="grid-view" role="presentation">
+                                        <a class="active" id="grid-view-tab" data-bs-toggle="tab" href="#grid-view" role="tab" aria-selected="true">
+                                            <i class="fa fa-th"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <!-- Thanh sắp xếp được chuyển sang vị trí của thanh tìm kiếm cũ -->
+                            <li class="short col-lg-2">
+                                <!-- Chỉnh sửa phần dropdown sắp xếp -->
+                                <!-- Cách viết đúng cho dropdown sắp xếp -->
+                                <select id="sort_pros" name="sort" class="nice-select wide rounded-0">
+                                    @if (ViewBag.Sort == "0")
+                                    {
+                                        <option value="0" selected>Sắp xếp</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="0">Sắp xếp</option>
+                                    }
+
+                                    @if (ViewBag.Sort == "1")
+                                    {
+                                        <option value="1" selected>Giá tăng dần</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="1">Giá tăng dần</option>
+                                    }
+
+                                    @if (ViewBag.Sort == "2")
+                                    {
+                                        <option value="2" selected>Giá giảm dần</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="2">Giá giảm dần</option>
+                                    }
+                                </select>
+                            </li>
+                            <!-- Thanh tìm kiếm được chuyển sang vị trí bên phải -->
+                            <li class="search-box-wrap col-lg-9 ms-auto">
+                                <div class="widgets-searchbox">
+                                    <input class="input-field" name="searchKey" type="text" placeholder="Nhập tên sản phẩm" value="@ViewBag.SearchKey">
+                                    <button class="widgets-searchbox-btn" type="submit" form="filterForm">
+                                        <i class="pe-7s-search"></i>
+                                    </button>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="tab-content text-charcoal pt-8">
+                        <div class="tab-pane fade show active" id="grid-view" role="tabpanel" aria-labelledby="grid-view-tab">
+                            <div class="product-grid-view row">
+                                @if (Model != null && Model.Count() > 0)
+                                {
+                                    foreach (var item in Model)
+                                    {
+                                        <div class="col-lg-4 col-sm-6 pt-6">
+                                            <div class="product-item">
+                                                <div class="product-img img-zoom-effect">
+                                                    <a href="sanpham/@item.MaSp">
+                                                        <img class="img-full" src="~/images/sanpham/@item.Anh" alt="Product Images">
+                                                    </a>
+                                                    <div class="product-add-action">
+                                                        <ul>
+                                                            <li class="add-to-cart">
+                                                                <a href="javascript:void(0)">
+                                                                    <i class="pe-7s-cart"></i>
+                                                                </a>
+                                                                <input hidden id="MaSp" name="MaSp" value="@item.MaSp" />
+                                                            </li>
+                                                            <li class="quantity">
+                                                                <div>
+                                                                    <input hidden id="txtsoLuong" name="txtsoLuong" class="cart-plus-minus-box" value="1" type="text">
+                                                                </div>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div class="product-content">
+                                                    <a style="display: block; height:72px" class="product-name" href="sanpham/@item.MaSp">@item.TenSp</a>
+                                                    <div class="price-box pb-1">
+                                                        <span class="old-price text-dark">@item.GiaBan.Value.ToString("#,##0") đ</span><br />
+                                                        <span class="new-price text-danger">@item.GiaGiam.Value.ToString("#,##0") đ</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <p>Không tìm thấy sản phẩm nào.</p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pagination-area pt-10">
+                        <ul class="pagination justify-content-center">
+                            <pager class="pager-container"
+                                   options="@PagedListRenderOptions.Bootstrap4PageNumbersOnly"
+                                   list="@Model"
+                                   asp-controller="SanPham"
+                                   asp-action="Index"
+                                   asp-all-route-data="@routeData" />
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<!-- Main Content Area End Here -->
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Khởi tạo NiceSelect
+            $('#sort_pros').niceSelect();
+
+            // Cập nhật trạng thái NiceSelect dựa trên giá trị đã chọn
+            var sortValue = $('#sort_pros').val();
+            $('#sort_pros').val(sortValue).niceSelect('update');
+
+            // Add to cart
+            function loadHeaderCart() {
+                $("#miniCart").load("/AjaxContent/HeaderCart");
+                $("#numberCart").load("/AjaxContent/NumberCart");
+            }
+
+            $(".add-to-cart").click(function () {
+                var productid = $(this).children('#MaSp').val();
+                var soLuong = $(this).closest('.product-item').find('#txtsoLuong').val() || 1;
+
+                $.ajax({
+                    url: '/api/cart/add',
+                    dataType: "json",
+                    type: "POST",
+                    data: {
+                        productID: productid,
+                        amount: soLuong
+                    },
+                    success: function (response) {
+                        loadHeaderCart();
+                        alert("Sản phẩm đã được thêm vào giỏ hàng!");
+                        location.reload();
+                    },
+                    error: function (error) {
+                        alert("Lỗi! " + error.responseText);
+                    }
+                });
+            });
+
+            // Sắp xếp: tự động gửi form khi thay đổi
+                          $("#sort_pros").change(function () {
+            var sortValue = $(this).val();
+            console.log("Selected sort value: " + sortValue);
+
+            // Cập nhật giá trị sort vào input hidden trong form
+            $("input[name='sort']").val(sortValue);
+            $("#filterForm").submit();
+        });
+
+            // Debug form data
+            $("#filterForm").submit(function (e) {
+                var formData = $(this).serialize();
+                console.log("Form data being submitted: " + formData);
+
+                var minPrice = $("input[name='minPrice']").val();
+                var maxPrice = $("input[name='maxPrice']").val();
+
+                if (minPrice && maxPrice) {
+                    if (parseFloat(minPrice) < 0 || parseFloat(maxPrice) < 0) {
+                        alert("Giá trị không được âm!");
+                        e.preventDefault();
+                        return false;
+                    }
+                    if (parseFloat(minPrice) > parseFloat(maxPrice)) {
+                        alert("Giá tối thiểu không được lớn hơn giá tối đa!");
+                        e.preventDefault();
+                        return false;
+                    }
+                }
+            });
+        });
+    </script>
+}

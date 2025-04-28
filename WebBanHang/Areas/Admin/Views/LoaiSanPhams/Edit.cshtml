@@ -1,0 +1,57 @@
+﻿@model WebBanHang.Models.LoaiSanPham
+
+@{
+    ViewData["Title"] = "Chỉnh sửa loại sản phẩm";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="page-header">
+    <h2 class="header-title">Quản lý loại sản phẩm</h2>
+    <div class="header-sub-title">
+        <nav class="breadcrumb breadcrumb-dash">
+            <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="breadcrumb-item"><i class="anticon anticon-home m-r-5"></i>Home</a>
+            <a asp-area="Admin" asp-controller="LoaiSanPhams" asp-action="Index" class="breadcrumb-item">Loại sản phẩm</a>
+            <span class="breadcrumb-item active">Chỉnh sửa loại sản phẩm</span>
+        </nav>
+    </div>
+</div>
+
+
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Sửa loại sản phẩm</h4>
+        <form asp-action="Edit" asp-route-id="@Model.MaLoai" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="MaLoai" />
+
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">ID</label>
+                <div class="col-sm-2">
+                    <input style="background-color:#F7F9F9;" type="text" readonly class="form-control" asp-for="MaLoai" placeholder="ID">
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Tên </label>
+                <div class="col-sm-5">
+                    <input type="text" class="form-control" asp-for="TenLoai" placeholder="Tên">
+                    <span asp-validation-for="TenLoai" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Mô tả</label>
+                <div class="col-sm-5">
+                    <textarea rows="5" class="form-control" asp-for="MoTa" placeholder="Mô tả"></textarea>
+                    <span asp-validation-for="MoTa" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-sm-5">
+                    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+

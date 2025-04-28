@@ -1,0 +1,173 @@
+﻿@model WebBanHang.Models.DonHang
+
+@{
+    ViewData["Title"] = "ChangeStatus";
+    Layout = "~/Areas/Ship/Views/Shared/_ShipperLayout.cshtml";
+    List<ChiTietDonHang> ctDH = ViewBag.ChiTiet;
+}
+
+<div class="page-header">
+    <h2 class="header-title">Quản lý giao hàng</h2>
+    <div class="header-sub-title">
+        <nav class="breadcrumb breadcrumb-dash">
+            <a asp-area="Ship" asp-controller="Home" asp-action="Index" class="breadcrumb-item"><i class="anticon anticon-home m-r-5"></i>Home</a>
+            <a asp-area="Ship" asp-controller="Home" asp-action="Index" class="breadcrumb-item">Đơn hàng</a>
+            <span class="breadcrumb-item active">Thay đổi trạng thái đơn hàng</span>
+        </nav>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div id="invoice" class="p-h-30">
+
+            <div class="row m-t-20 lh-2">
+                <div class="col-sm-6">
+                    <div class="card">
+                        <div class="card-body" style="height:250px">
+                            <h4 class="p-l-10 m-t-10">Thông tin đơn hàng:</h4>
+                            <address class="p-l-10 m-t-10">
+                                <span class="font-weight-semibold text-dark">MÃ ĐƠN HÀNG: #@Model.MaDh</span><br>
+                                <span class="font-weight-semibold text-dark">Hình thức thanh toán: @Model.PhuongThucThanhToan</span><br>
+
+                                <span class="font-weight-semibold text-dark">Khách hàng: @Model.MaKhNavigation.TenKh (SĐT: @Model.Sdt)</span><br>
+                                
+                                <span class="font-weight-semibold text-dark">Ngày đặt: @Model.NgayDat</span><br>
+                                <span class="font-weight-semibold text-dark">Địa chỉ: @ViewBag.FullAddress</span><br>
+                            </address>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-sm-6 ">
+                    <div class="card">
+                        <div class="card-body" style="height:250px">
+                            <h4 class="p-l-10 m-t-10">Thông tin giao hàng:</h4>
+                            <address class="p-l-10 m-t-10">
+                                <span class="font-weight-semibold text-dark">Trạng thái đơn hàng: @Model.MaTtNavigation.TenTt</span><br>
+                                <span class="font-weight-semibold text-dark">Shipper: @Model.MaShipperNavigation.TenHt</span><br>
+                                <br />
+                                @if (Model.MaTt == 3)
+                                {
+                                    <div class="form-group row">
+                                        <div class="col-sm-5 ">
+                                            <form asp-controller="Home" asp-action="ChangeStatus" asp-route-id="@Model.MaDh" method="post">
+                                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                                <input type="hidden" asp-for="MaDh" />
+                                                <input type="hidden" name="KQ" value="TC" />
+                                                <div class="form-group row">
+                                                    <div class="col-sm-12">
+                                                        <button type="submit" class="btn btn-success">Giao thành công</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+
+                                        <div class="col-sm-6">
+                                            <form asp-controller="Home" asp-action="ChangeStatus" asp-route-id="@Model.MaDh" method="post">
+                                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                                <input type="hidden" asp-for="MaDh" />
+                                                <input type="hidden" name="KQ" value="TB" />
+                                                <div class="form-group row">
+                                                    <div class="col-sm-12">
+                                                        <button type="submit" class="btn btn-warning">Giao thất bại</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="form-group row">
+                                        <div class="col-sm-5 ">
+                                            <form asp-controller="Home" asp-action="ChangeStatus" asp-route-id="@Model.MaDh" method="post">
+                                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                                <input type="hidden" asp-for="MaDh" />
+                                                <input type="hidden" name="KQ" value="TC" />
+                                                <div class="form-group row">
+                                                    <div class="col-sm-12">
+                                                        <button disabled type="submit" class="btn btn-success">Giao thành công</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+
+                                        <div class="col-sm-6">
+                                            <form asp-controller="Home" asp-action="ChangeStatus" asp-route-id="@Model.MaDh" method="post">
+                                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                                <input type="hidden" asp-for="MaDh" />
+                                                <input type="hidden" name="KQ" value="TB" />
+                                                <div class="form-group row">
+                                                    <div class="col-sm-12">
+                                                        <button disabled type="submit" class="btn btn-warning">Giao thất bại</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                }
+
+
+
+                            </address>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="m-t-20">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Sản phẩm</th>
+                                <th>Số lượng</th>
+                                <th>Đơn giá</th>
+                                <th>Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (ctDH != null && ctDH.Count() > 0)
+                            {
+                                foreach (var item in ctDH)
+                                {
+                                    int i = 1;
+                                    <tr>
+                                        <th>@i</th>
+                                        <td>@item.MaSpNavigation.TenSp</td>
+                                        <td>@item.SoLuong</td>
+                                        <td>@item.GiaGiam.Value.ToString("#,##0") đ</td>
+                                        <td>@item.TongTien.Value.ToString("#,##0") đ</td>
+                                    </tr>
+                                    i++;
+                                }
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row m-t-30 lh-1-8">
+                    <div class="col-sm-12">
+                        <div class="float-right text-right">
+                            <p class="font-weight-semibold text-dark">Tạm tính: @Model.TongTien.Value.ToString("#,##0") đ</p>
+                            <p class="font-weight-semibold text-dark">Giảm giá: @Model.GiamGia.Value.ToString("#,##0") đ</p>
+                            <p class="font-weight-semibold text-dark">
+                                Phí giao hàng:
+                                @{
+                                    var pgh = Model.TienShip - Model.GiamGiaShip;
+                                }
+                                @pgh.Value.ToString("#,##0") đ
+                            </p>
+                            <hr>
+                            <h4><span class="font-weight-semibold text-dark">Tổng cộng :</span> @Model.TongTien.Value.ToString("#,##0") đ</h4>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,41 @@
+﻿@model List<KhachHang>
+
+@if (Model != null)
+{
+    foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @item.MaKh
+            </td>
+            <td>
+                @item.TenKh
+            </td>
+            <td>@item.Email</td>
+            <td>@item.Sdt</td>
+            <td>
+                @if (item.Khoa == false)
+                {
+                    <div class="d-flex align-items-center">
+                        <div class="badge badge-success badge-dot m-r-10"></div>
+                        <div>Hoạt động</div>
+                    </div>
+                }
+                else
+                {
+                    <div class="d-flex align-items-center">
+                        <div class="badge badge-danger badge-dot m-r-10"></div>
+                        <div>Khóa</div>
+                    </div>
+                }
+
+            </td>
+            <td class="text-right">
+                <a class="btn btn-icon btn-hover btn-sm btn-rounded" asp-area="Admin" asp-controller="KhachHangs" asp-action="Khoa" asp-route-id="@item.MaKh">
+                    <i class="anticon anticon-lock"></i>
+                </a>
+
+            </td>
+        </tr>
+    }
+}

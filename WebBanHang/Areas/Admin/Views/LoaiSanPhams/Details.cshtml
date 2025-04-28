@@ -1,0 +1,42 @@
+﻿@model WebBanHang.Models.LoaiSanPham
+
+@{
+    ViewData["Title"] = "Thông tin loại sản phẩm";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="page-header">
+    <h2 class="header-title">Quản lý loại sản phẩm</h2>
+    <div class="header-sub-title">
+        <nav class="breadcrumb breadcrumb-dash">
+            <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="breadcrumb-item"><i class="anticon anticon-home m-r-5"></i>Home</a>
+            <a asp-area="Admin" asp-controller="LoaiSanPhams" asp-action="Index" class="breadcrumb-item">Loại sản phẩm</a>
+            <span class="breadcrumb-item active">Thông tin loại sản phẩm</span>
+        </nav>
+    </div>
+</div>
+<hr />
+
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Thông tin loại sản phẩm</h4>
+        <div class="table-responsive">
+            <table class="product-info-table m-t-20">
+                <tbody>
+                    <tr>
+                        <td>ID:</td>
+                        <td class="text-dark font-weight-semibold">@Model.MaLoai</td>
+                    </tr>
+                    <tr>
+                        <td>Tên:</td>
+                        <td>@Model.TenLoai</td>
+                    </tr>
+                    <tr>
+                        <td>Mô tả:</td>
+                        <td>@Model.MoTa</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

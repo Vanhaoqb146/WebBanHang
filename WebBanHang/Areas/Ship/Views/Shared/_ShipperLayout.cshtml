@@ -1,0 +1,138 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>@ViewData["Title"]</title>
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="~/images/logo.jpg">
+
+    <!-- page css -->
+    <link href="~/adminassets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css" rel="stylesheet">
+
+    <!-- Core css -->
+    <link href="~/adminassets/css/app.min.css" rel="stylesheet">
+    <style>
+        *{
+            font-family: Verdana, Calibri, Arial, Helvetica, sans-serif;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="app">
+        <div class="layout">
+            <!-- Header START -->
+            <div class="header">
+                <div class="logo logo-dark">
+                    <a href="/admin">
+                        <img height="65px" src="~/images/logo.jpg" alt="Logo">
+                        <img class="logo-fold" src="~/images/logo.jpg" alt="Logo">
+                    </a>
+                </div>
+                <div class="logo logo-white">
+                    <a href="index.html">
+                        <img src="~/adminassets/images/logo/logo-white2.png" alt="Logo">
+                        <img class="logo-fold" src="~/adminassets/images/logo/logo-fold-white.png" alt="Logo">
+                    </a>
+                </div>
+                <div class="nav-wrap">
+                    <ul class="nav-left">
+                        <li class="desktop-toggle">
+                            <a href="javascript:void(0);">
+                                <i class="anticon"></i>
+                            </a>
+                        </li>
+                        <li class="mobile-toggle">
+                            <a href="javascript:void(0);">
+                                <i class="anticon"></i>
+                            </a>
+                        </li>
+                    </ul>
+                    <ul class="nav-right">
+
+                        <li class="dropdown dropdown-animated scale-left">
+                            <div class="pointer" data-toggle="dropdown">
+                                <div class="m-h-10 m-r-15">
+                                    <i class="anticon font-size-16 anticon-user"></i>
+                                </div>
+                            </div>
+                            <div class="p-b-15 p-t-20 dropdown-menu pop-profile">
+
+                                <a asp-area="Ship" asp-controller="AccountsShip" asp-action="Info" class="dropdown-item d-block p-h-15 p-v-10">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <i class="anticon opacity-04 font-size-16 anticon-user"></i>
+                                            <span class="m-l-10">Tài khoản</span>
+                                        </div>
+                                        <i class="anticon font-size-10 anticon-right"></i>
+                                    </div>
+                                </a>
+                                <a asp-area="Ship" asp-controller="AccountsShip" asp-action="DangXuat" class="dropdown-item d-block p-h-15 p-v-10">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <i class="anticon opacity-04 font-size-16 anticon-logout"></i>
+                                            <span class="m-l-10">Đăng xuất</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+            <!-- Header END -->
+            <!-- Side Nav START -->
+            @await Html.PartialAsync("_SideNavPartialView.cshtml")
+            <!-- Side Nav END -->
+            <!-- Page Container START -->
+            <div class="page-container">
+
+                <!-- Content Wrapper START -->
+                <div class="main-content">
+                    @RenderBody()
+                </div>
+                <!-- Content Wrapper END -->
+                <!-- Footer START -->
+                <footer class="footer">
+                    <div class="footer-content">
+                        <p class="m-b-0">Copyright © 2024 HN Store.</p>
+                        <span>
+                            <a href="" class="text-gray m-r-15">Điều khoản</a>
+                            <a href="" class="text-gray">Bảo mật</a>
+                        </span>
+                    </div>
+                </footer>
+                <!-- Footer END -->
+
+            </div>
+            <!-- Page Container END -->
+            <!-- Search Start-->
+            
+            <!-- Search End-->
+            <!-- Quick View START -->
+            
+            <!-- Quick View END -->
+        </div>
+    </div>
+
+    <script src="~/admin~/adminassets/js/vendors.min.js"></script>
+    <!-- Core Vendors JS -->
+    <script src="~/adminassets/js/vendors.min.js"></script>
+
+    <!-- page js -->
+    <script src="~/adminassets/vendors/chartjs/Chart.min.js"></script>
+    <script src="~/adminassets/js/pages/dashboard-e-commerce.js"></script>
+
+    <!-- Core JS -->
+    <script src="~/adminassets/js/app.min.js"></script>
+    @await Component.InvokeAsync("Notyf")
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+
+</html>
