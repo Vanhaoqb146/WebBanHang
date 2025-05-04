@@ -51,21 +51,30 @@ namespace WebBanHang.Controllers
                     try
                     {
                         var ranges = priceRange.Split('-');
-                        if (ranges.Length == 2)
+
+                        // Xử lý khoảng giá "trên 30 triệu" - "30000000-"
+                        if (priceRange.EndsWith("-"))
+                        {
+                            int min = int.Parse(ranges[0]);
+                            query = query.Where(p => p.GiaGiam >= min);
+                        }
+                        // Trường hợp khoảng giá có dạng "min-max"
+                        else if (ranges.Length == 2 && !string.IsNullOrEmpty(ranges[0]) && !string.IsNullOrEmpty(ranges[1]))
                         {
                             int min = int.Parse(ranges[0]);
                             int max = int.Parse(ranges[1]);
                             query = query.Where(p => p.GiaGiam >= min && p.GiaGiam <= max);
                         }
-                        else if (ranges.Length == 1 && priceRange.EndsWith("-"))
+                        // Trường hợp khoảng giá có dạng "-max" (nhỏ hơn hoặc bằng max)
+                        else if (ranges.Length == 2 && string.IsNullOrEmpty(ranges[0]) && !string.IsNullOrEmpty(ranges[1]))
                         {
-                            int min = int.Parse(ranges[0]);
-                            query = query.Where(p => p.GiaGiam >= min);
+                            int max = int.Parse(ranges[1]);
+                            query = query.Where(p => p.GiaGiam <= max);
                         }
                     }
                     catch (Exception ex)
                     {
-                        // Log lỗi nếu cần
+                        // Log lỗi để theo dõi: logger.LogError(ex, "Lỗi xử lý khoảng giá: {PriceRange}", priceRange);
                     }
                 }
 
@@ -180,21 +189,30 @@ namespace WebBanHang.Controllers
                     try
                     {
                         var ranges = priceRange.Split('-');
-                        if (ranges.Length == 2)
+
+                        // Xử lý khoảng giá "trên 30 triệu" - "30000000-"
+                        if (priceRange.EndsWith("-"))
+                        {
+                            int min = int.Parse(ranges[0]);
+                            query = query.Where(p => p.GiaGiam >= min);
+                        }
+                        // Trường hợp khoảng giá có dạng "min-max"
+                        else if (ranges.Length == 2 && !string.IsNullOrEmpty(ranges[0]) && !string.IsNullOrEmpty(ranges[1]))
                         {
                             int min = int.Parse(ranges[0]);
                             int max = int.Parse(ranges[1]);
                             query = query.Where(p => p.GiaGiam >= min && p.GiaGiam <= max);
                         }
-                        else if (ranges.Length == 1 && priceRange.EndsWith("-"))
+                        // Trường hợp khoảng giá có dạng "-max" (nhỏ hơn hoặc bằng max)
+                        else if (ranges.Length == 2 && string.IsNullOrEmpty(ranges[0]) && !string.IsNullOrEmpty(ranges[1]))
                         {
-                            int min = int.Parse(ranges[0]);
-                            query = query.Where(p => p.GiaGiam >= min);
+                            int max = int.Parse(ranges[1]);
+                            query = query.Where(p => p.GiaGiam <= max);
                         }
                     }
                     catch (Exception ex)
                     {
-                        // Log lỗi nếu cần
+                        // Log lỗi để theo dõi: logger.LogError(ex, "Lỗi xử lý khoảng giá: {PriceRange}", priceRange);
                     }
                 }
 
