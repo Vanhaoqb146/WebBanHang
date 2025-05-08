@@ -202,60 +202,33 @@ namespace WebBanHang.Areas.Admin.Controllers
 
                     if (donhang != null)
                     {
-                        if (donHang.MaTt == 3)
+                        if (donHang.MaTt == 3 && donHang.MaShipper == null)
                         {
-                            if (donHang.MaShipper == null)
-                            {
-                                _notyfService.Warning("Chưa chọn shipper");
-
-                                ViewData["Shipper"] = new SelectList(_context.Shippers, "MaShipper", "TenHt", donHang.MaShipper);
-                                ViewData["lsTrangThai"] = new SelectList(_context.TrangThaiDonHangs, "MaTt", "TenTt", donhang.MaTt);
-                                return RedirectToAction("ChangeStatus", id = donhang.MaDh);
-                            }
-                            else
-                            {
-                                donhang.MaTt = donHang.MaTt;
-                                donhang.MaShipper = donHang.MaShipper;
-                            }
+                            _notyfService.Warning("Chưa chọn shipper");
+                            ViewData["Shipper"] = new SelectList(_context.Shippers, "MaShipper", "TenHt", donHang.MaShipper);
+                            ViewData["lsTrangThai"] = new SelectList(_context.TrangThaiDonHangs, "MaTt", "TenTt", donhang.MaTt);
+                            return RedirectToAction("ChangeStatus", new { id = donhang.MaDh });
                         }
-                        else
-                        {
-                            donhang.MaTt = donHang.MaTt;
-                        }
+                        donhang.MaTt = donHang.MaTt;
+                        donhang.MaShipper = donHang.MaShipper;
                     }
                     _context.Update(donhang);
                     await _context.SaveChangesAsync();
                     _notyfService.Success("Cập nhật trạng thái thành công");
-
-                    if (donHang.MaTt == 2)
-                    {
-                        ViewData["Shipper"] = new SelectList(_context.Shippers, "MaShipper", "TenHt", 0);
-                    }
-                    else
-                    {
-                        ViewData["Shipper"] = new SelectList(_context.Shippers, "MaShipper", "TenHt", donhang.MaShipper);
-                    }
-
-                    ViewData["lsTrangThai"] = new SelectList(_context.TrangThaiDonHangs, "MaTt", "TenTt", donhang.MaTt);
-                    return RedirectToAction("ChangeStatus", new { id = donhang.MaDh });
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (Exception ex)
                 {
-                    if (!DonHangExists(donHang.MaDh))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    _notyfService.Error($"Lỗi khi cập nhật trạng thái: {ex.Message}");
+                    Console.WriteLine(ex.ToString());
+                    return View(donHang);
                 }
-            }
 
-            //???
+                ViewData["Shipper"] = new SelectList(_context.Shippers, "MaShipper", "TenHt", donHang.MaShipper);
+                ViewData["lsTrangThai"] = new SelectList(_context.TrangThaiDonHangs, "MaTt", "TenTt", donHang.MaTt);
+                return RedirectToAction("ChangeStatus", new { id = donHang.MaDh });
+            }
             ViewData["Shipper"] = new SelectList(_context.Shippers, "MaShipper", "TenHt", donHang.MaShipper);
             ViewData["lsTrangThai"] = new SelectList(_context.TrangThaiDonHangs, "MaTt", "TenTt", donHang.MaTt);
-
             return View(donHang);
         }
 
@@ -288,16 +261,35 @@ namespace WebBanHang.Areas.Admin.Controllers
             // Get the HTML content of the invoice
             string html1 = $"";
             html1 +=
-                $"<h4>Cửa hàng HN Store</h4>" +
-                $"<h4>Địa chỉ: 36 Nguyên Xá, Minh Khai, Bắc Từ Liêm, Hà Nội</h4>" +
-                $"<html><body><h1 style=\"text-align:center\">HÓA ĐƠN</h1>" +
-                $"</br>" +
+                $"<!DOCTYPE html>" +
+                $"<html>" +
+                $"<head>" +
+                $"<meta charset=\"utf-8\">" +
+                $"<title>Hóa đơn</title>" +
+                $"<style>" +
+                $"body {{ font-family: 'Arial', sans-serif; padding: 20px; }}" +
+                $"table {{ width: 100%; border-collapse: collapse; margin-bottom: 30px; }}" +
+                $"table, th, td {{ border: 1px solid #000; }}" +
+                $"th, td {{ padding: 8px; }}" +
+                $".signature-section {{ margin-top: 50px; width: 100%; }}" +
+                $".signature-row {{ width: 100%; clear: both; }}" +
+                $".signature-column {{ float: left; width: 45%; text-align: center; }}" +
+                $".signature-column-right {{ float: right; width: 45%; text-align: center; }}" +
+                $".signature-title {{ font-weight: bold; margin-bottom: 5px; }}" +
+                $".signature-subtitle {{ font-style: italic; margin-bottom: 5px; }}" +
+                $".signature-space {{ height: 80px; }}" +
+                $"</style>" +
+                $"</head>" +
+                $"<body>" +
+                $"<h4>Cửa hàng PERFECT HOME</h4>" +
+                $"<h4>Địa chỉ: 125 Nguyễn Văn Linh, Liên Bảo, Vĩnh Yên</h4>" +
+                $"<h1 style=\"text-align:center\">HÓA ĐƠN</h1>" +
                 $"<h4 style=\"text-align:center\">MÃ ĐƠN HÀNG: #{dh.MaDh}</h4>" +
                 $"<h4>Ngày đặt: {dh.NgayDat}</h4>" +
                 $"<h4>Hình thức thanh toán: {dh.PhuongThucThanhToan}</h4>" +
                 $"<h4>Khách hàng: {dh.HoTen} - {dh.Sdt}</h4>" +
                 $"<h4>Địa chỉ giao hàng: {fullAddress}</h4>" +
-                $"<table style=\"border-collapse: collapse\" border=\"1\">" +
+                $"<table>" +
                 $"<tr>" +
                     $"<th width=\"100px\">STT</th>" +
                     $"<th width=\"400px\">Sản phẩm</th>" +
@@ -305,10 +297,8 @@ namespace WebBanHang.Areas.Admin.Controllers
                     $"<th width=\"100px\">Đơn giá</th>" +
                     $"<th width=\"100px\" align=\"right\">Thành tiền</th>" +
                  $"</tr>";
-
             string html2 = "";
             int i = 1;
-
             foreach (var item in ctdh)
             {
                 html2 +=
@@ -321,7 +311,6 @@ namespace WebBanHang.Areas.Admin.Controllers
                      $"</tr>";
                 i++;
             }
-
             string html3 = "";
             html3 +=
                 "<tr>" +
@@ -341,36 +330,51 @@ namespace WebBanHang.Areas.Admin.Controllers
                     $"<th align=\"right\">{dh.TongTien}</th>" +
                 "</tr>" +
                 $"</table>" +
-                $"" +
-                $"</body></html>";
 
+                // Phần chữ ký sử dụng float thay vì flexbox
+                $"<div class=\"signature-section\">" +
+                $"  <div class=\"signature-row\">" +
+                $"    <div class=\"signature-column\">" +
+                $"      <div class=\"signature-title\">Người bán hàng</div>" +
+                $"      <div class=\"signature-subtitle\">(Ký, ghi rõ họ tên)</div>" +
+                $"      <div class=\"signature-space\"></div>" +
+                $"    </div>" +
+                $"    <div class=\"signature-column-right\">" +
+                $"      <div class=\"signature-title\">Người mua hàng</div>" +
+                $"      <div class=\"signature-subtitle\">(Ký, ghi rõ họ tên)</div>" +
+                $"      <div class=\"signature-space\"></div>" +
+                $"    </div>" +
+                $"  </div>" +
+                $"</div>" +
+
+                $"</body></html>";
             string htmlContent = html1 + html2 + html3;
 
             // Convert HTML to PDF
             var doc = new HtmlToPdfDocument()
             {
                 GlobalSettings = {
-                PaperSize = PaperKind.A4,
-                Orientation = Orientation.Portrait
-            },
+            PaperSize = PaperKind.A4,
+            Orientation = Orientation.Portrait,
+            Margins = new MarginSettings { Top = 15, Bottom = 15, Left = 15, Right = 15 }
+        },
                 Objects = {
-                new ObjectSettings() {
-                    HtmlContent = htmlContent,
-                    WebSettings = { DefaultEncoding = "utf-8" }
-                }
+            new ObjectSettings() {
+                HtmlContent = htmlContent,
+                WebSettings = { DefaultEncoding = "utf-8" }
             }
+        }
             };
 
             var pdfBytes = _pdfConverter.Convert(doc);
 
             // Set the response content type and headers
             Response.ContentType = "application/pdf";
-            Response.Headers.Add("content-disposition", $"attachment;filename=HoaDon-DH{dh.MaDh}-{DateTime.Now}.pdf");
+            Response.Headers.Add("content-disposition", $"attachment;filename=HoaDon-DH{dh.MaDh}-{DateTime.Now:MM_dd_yyyy HH_mm_ss}.pdf");
 
             // Write the PDF to the response
             return File(pdfBytes, "application/pdf");
         }
-
 
 
 
@@ -439,17 +443,13 @@ namespace WebBanHang.Areas.Admin.Controllers
                 {
                     _context.Update(donHang);
                     await _context.SaveChangesAsync();
+                    _notyfService.Success("Cập nhật đơn hàng thành công");
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (Exception ex)
                 {
-                    if (!DonHangExists(donHang.MaDh))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    _notyfService.Error($"Lỗi khi lưu thay đổi: {ex.Message}");
+                    Console.WriteLine(ex.ToString());
+                    return View(donHang);
                 }
                 return RedirectToAction(nameof(Index));
             }

@@ -11,7 +11,7 @@
                     <div class="avatar avatar-icon avatar-lg avatar-blue">
                         <a href="/Admin/LoaiSanPhams">
                             <i class="anticon anticon-shop"></i>
-                        </a> 
+                        </a>
                     </div>
                     <div class="m-l-15">
                         <h2 class="m-b-0">@ViewBag.LSP</h2>
@@ -28,7 +28,7 @@
                     <div class="avatar avatar-icon avatar-lg avatar-cyan">
                         <a href="/Admin/SanPhams">
                             <i class="anticon anticon-shopping"></i>
-                        </a> 
+                        </a>
                     </div>
                     <div class="m-l-15">
                         <h2 class="m-b-0">@ViewBag.SP</h2>
@@ -63,7 +63,6 @@
                         <a href="/Admin/KhachHangs">
                             <i class="anticon anticon-user"></i>
                         </a>
-                            
                     </div>
                     <div class="m-l-15">
                         <h2 class="m-b-0">@ViewBag.KH</h2>
@@ -87,7 +86,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="col-md-12 col-lg-4">
         <div class="card">
             <div class="card-body">
@@ -95,15 +94,15 @@
                 <div class="m-v-60 text-center" style="height: 200px">
                     <canvas class="chart" id="od-chart"></canvas>
                 </div>
+                <!-- Hiển thị 6 trạng thái đơn hàng -->
                 <div class="row border-top p-t-25">
                     <div class="col-4">
                         <div class="d-flex justify-content-center">
                             <div class="media align-items-center">
                                 <span style="background-color:rgb(255, 205, 86)" class="badge badge-dot m-r-10"></span>
                                 <div class="m-l-5">
-                                    <h4 class="m-b-0">@ViewBag.DH1</h4>
-                                    <p style="font-size:12px" class="m-b-0 muted">Chờ xử</p>
-                                    <p style="font-size:12px" class="m-b-0 muted">lý</p>
+                                    <h4 class="m-b-0">@ViewBag.ChoXuLy</h4>
+                                    <p style="font-size:12px" class="m-b-0 muted">Chờ xử lý</p>
                                 </div>
                             </div>
                         </div>
@@ -111,10 +110,45 @@
                     <div class="col-4">
                         <div class="d-flex justify-content-center">
                             <div class="media align-items-center">
-                                <span style="background-color:rgb(54, 162, 235)" class="badge badge-dot m-r-10 m-l-10"></span>
+                                <span style="background-color:rgb(54, 162, 235)" class="badge badge-dot m-r-10"></span>
                                 <div class="m-l-5">
-                                    <h4 class="m-b-0">@ViewBag.DH2</h4>
+                                    <h4 class="m-b-0">@ViewBag.DaXacNhan</h4>
+                                    <p style="font-size:12px" class="m-b-0 muted">Đã xác nhận</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="d-flex justify-content-center">
+                            <div class="media align-items-center">
+                                <span style="background-color:rgb(75, 192, 192)" class="badge badge-dot m-r-10"></span>
+                                <div class="m-l-5">
+                                    <h4 class="m-b-0">@ViewBag.DangGiao</h4>
+                                    <p style="font-size:12px" class="m-b-0 muted">Đang giao</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row p-t-15">
+                    <div class="col-4">
+                        <div class="d-flex justify-content-center">
+                            <div class="media align-items-center">
+                                <span style="background-color:rgb(153, 102, 255)" class="badge badge-dot m-r-10"></span>
+                                <div class="m-l-5">
+                                    <h4 class="m-b-0">@ViewBag.ThanhCong</h4>
                                     <p style="font-size:12px" class="m-b-0 muted">Thành công</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="d-flex justify-content-center">
+                            <div class="media align-items-center">
+                                <span style="background-color:rgb(255, 159, 64)" class="badge badge-dot m-r-10"></span>
+                                <div class="m-l-5">
+                                    <h4 class="m-b-0">@ViewBag.KhongThanhCong</h4>
+                                    <p style="font-size:12px" class="m-b-0 muted">Không thành công</p>
                                 </div>
                             </div>
                         </div>
@@ -124,9 +158,8 @@
                             <div class="media align-items-center">
                                 <span style="background-color:rgb(255, 99, 132)" class="badge badge-dot m-r-10"></span>
                                 <div class="m-l-5">
-                                    <h4 class="m-b-0">@ViewBag.DH3</h4>
-                                    <p style="font-size:12px" class="m-b-0 muted">Đã</p>
-                                    <p style="font-size:12px" class="m-b-0 muted">hủy</p>
+                                    <h4 class="m-b-0">@ViewBag.DaHuy</h4>
+                                    <p style="font-size:12px" class="m-b-0 muted">Đã hủy</p>
                                 </div>
                             </div>
                         </div>
@@ -149,7 +182,7 @@
     </div>
 </div>
 
-@section Scripts{
+@section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.bundle.js"></script>
     <script>
         var salesData = @Html.Raw(Json.Serialize(ViewBag.SalesData));
@@ -184,47 +217,65 @@
             }
         });
 
-        //
-        var dh1 = @Html.Raw(Json.Serialize(ViewBag.DH1));
-        var dh2 = @Html.Raw(Json.Serialize(ViewBag.DH2));
-        var dh3 = @Html.Raw(Json.Serialize(ViewBag.DH3));
-        var tt1 = @Html.Raw(Json.Serialize(ViewBag.Ten1));
-        var tt2 = @Html.Raw(Json.Serialize(ViewBag.Ten2));
-        var tt3 = @Html.Raw(Json.Serialize(ViewBag.Ten3));
-        //
-        var chartLabels = [tt1,tt2,tt3];
+        // Dữ liệu cho 6 trạng thái đơn hàng
+        var choXuLy = @Html.Raw(Json.Serialize(ViewBag.ChoXuLy ?? 0));
+        var daXacNhan = @Html.Raw(Json.Serialize(ViewBag.DaXacNhan ?? 0));
+        var dangGiao = @Html.Raw(Json.Serialize(ViewBag.DangGiao ?? 0));
+        var thanhCong = @Html.Raw(Json.Serialize(ViewBag.ThanhCong ?? 0));
+        var khongThanhCong = @Html.Raw(Json.Serialize(ViewBag.KhongThanhCong ?? 0));
+        var daHuy = @Html.Raw(Json.Serialize(ViewBag.DaHuy ?? 0));
 
-        var chartData = [dh1,dh2,dh3];
+        // Tên các trạng thái đơn hàng
+        var labels = [
+            "Chờ xử lý",
+            "Đã xác nhận",
+            "Đang giao hàng",
+            "Giao hàng thành công",
+            "Giao hàng không thành công",
+            "Đã hủy"
+        ];
+
+        var data = [
+            choXuLy,
+            daXacNhan,
+            dangGiao,
+            thanhCong,
+            khongThanhCong,
+            daHuy
+        ];
 
         var ctx = document.getElementById('od-chart').getContext('2d');
-        var salesChart = new Chart(ctx, {
+        var orderChart = new Chart(ctx, {
             type: 'pie',
             data: {
-                labels: chartLabels,
+                labels: labels,
                 datasets: [{
-                    label: 'Doanh số các tháng gần đây',
-                    data: chartData,
-                    fill: false,
+                    data: data,
                     backgroundColor: [
-                        'rgb(255, 205, 86)',
-                        'rgb(54, 162, 235)',
-                        'rgb(255, 99, 132)',
-                        
+                        'rgb(255, 205, 86)',   // Vàng - Chờ xử lý
+                        'rgb(54, 162, 235)',   // Xanh dương - Đã xác nhận
+                        'rgb(75, 192, 192)',   // Xanh lục - Đang giao hàng
+                        'rgb(153, 102, 255)',  // Tím - Giao hàng thành công
+                        'rgb(255, 159, 64)',   // Cam - Giao hàng không thành công
+                        'rgb(255, 99, 132)'    // Đỏ - Đã hủy
                     ],
-                    tension: 0.1
+                    borderWidth: 1
                 }]
             },
             options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
+                responsive: true,
+                maintainAspectRatio: false,
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        boxWidth: 12,
+                        fontSize: 10
                     }
                 }
             }
         });
 
-        //
-        //
+        // Top sản phẩm bán chạy
         var salesData2 = @Html.Raw(Json.Serialize(ViewBag.TopSellingProducts));
         var nameP = @Html.Raw(Json.Serialize(ViewBag.ProductName));
         console.log(salesData2);
@@ -273,6 +324,5 @@
                 }
             }
         });
-
     </script>
 }
