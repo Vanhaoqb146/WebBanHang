@@ -280,8 +280,7 @@
         var nameP = @Html.Raw(Json.Serialize(ViewBag.ProductName));
         console.log(salesData2);
         console.log(nameP);
-        var chartLabels = nameP.map(s => s.name);
-
+              var chartLabels = salesData2.map(s => s.productName);
         var chartData = salesData2.map(s => s.quantity);
         console.log(chartData);
 

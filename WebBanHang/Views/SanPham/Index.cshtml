@@ -40,11 +40,21 @@
                 <div class="product-grid-view row mx-2">
                     @if (TopSP != null && TopSP.Count() > 0)
                     {
-                        foreach (var item in TopSP)
+                        @* Sắp xếp lại TopSP dựa trên thứ hạng để đảm bảo hiển thị đúng thứ tự *@
+                        var sortedTopSP = TopSP.OrderBy(item => ViewBag.TopSPRanks[item.MaSp]).ToList();
+
+                        foreach (var item in sortedTopSP)
                         {
                             <div class="col-lg-3 col-sm-6 pt-6">
                                 <div class="product-item">
                                     <div class="product-img img-zoom-effect">
+                                        <!-- Badge hiển thị thứ hạng -->
+                                        <div class="position-absolute top-0 start-0 bg-danger text-white p-2" style="z-index: 1; border-radius: 0 0 10px 0;">
+                                            Top @ViewBag.TopSPRanks[item.MaSp]
+                                            <!-- Có thể hiển thị thêm số lượng bán -->
+                                            <small>(Đã bán: @ViewBag.TopSPQuantities[item.MaSp])</small>
+                                        </div>
+
                                         <a href="sanpham/@item.MaSp">
                                             <img class="img-full" src="~/images/sanpham/@item.Anh" alt="Product Images">
                                         </a>
@@ -74,10 +84,6 @@
                                 </div>
                             </div>
                         }
-                    }
-                    else
-                    {
-                        <p>Chưa sản phẩm nào.</p>
                     }
                 </div>
             </div>

@@ -60,22 +60,19 @@ namespace WebBanHang.Areas.Admin.Controllers
 
             // Lấy thông tin top sản phẩm bán chạy
             var topSellingProducts = _context.ChiTietDonHangs
-                .Include(x => x.MaSpNavigation)
-                .Where(od=> od.MaDhNavigation.MaTt==4)
-                .GroupBy(od => od.MaSp)
-                .Select(g => new { ProductId = g.Key, Quantity = g.Sum(od => od.SoLuong ?? 0) })
-                .OrderByDescending(g => g.Quantity)
-                .Take(5)
-                .ToList();
-
-            var productIds = topSellingProducts.Select(p => p.ProductId).ToList();
-            var productsName = _context.SanPhams
-                .Where(p => productIds.Contains(p.MaSp))
-                .Select(g => new { Name = g.TenSp })
-                .ToList();
+     .Include(x => x.MaSpNavigation)
+     .Where(od => od.MaDhNavigation.MaTt == 4)
+     .GroupBy(od => new { od.MaSp, TenSp = od.MaSpNavigation.TenSp })
+     .Select(g => new {
+         ProductId = g.Key.MaSp,
+         ProductName = g.Key.TenSp,
+         Quantity = g.Sum(od => od.SoLuong ?? 0)
+     })
+     .OrderByDescending(g => g.Quantity)
+     .Take(5)
+     .ToList();
 
             ViewBag.TopSellingProducts = topSellingProducts;
-            ViewBag.ProductName = productsName;
 
             return View();
         }

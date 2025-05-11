@@ -36,17 +36,46 @@ namespace WebBanHang.Controllers
                     .Include(s => s.MaThNavigation);
 
                 //Top 4 sp
-                var topSP = query.Select(
-                    sp => new
+                //var topSP = query.Select(
+                //    sp => new
+                //    {
+                //        ThongTinSP = sp,
+                //        SoLuong = sp.ChiTietDonHangs.Sum(ct => (int?)ct.SoLuong) ?? 0,
+                //    })
+                //    .OrderByDescending(x => x.SoLuong)
+                //    .Take(4)
+                //    .Select(x => x.ThongTinSP)
+                //    .ToList();
+                //ViewBag.TopSP = topSP;
+                // Lưu trữ kết quả truy vấn đầy đủ (bao gồm cả sản phẩm và số lượng bán)
+                var topSPWithQuantity = _context.ChiTietDonHangs
+                    .Include(ct => ct.MaSpNavigation)
+                    .Include(ct => ct.MaDhNavigation)
+                    .Where(ct => ct.MaDhNavigation.MaTt == 4)
+                    .GroupBy(ct => ct.MaSpNavigation)
+                    .Select(g => new
                     {
-                        ThongTinSP = sp,
-                        SoLuong = sp.ChiTietDonHangs.Sum(ct => (int?)ct.SoLuong) ?? 0,
+                        Product = g.Key,
+                        Quantity = g.Sum(ct => ct.SoLuong ?? 0)
                     })
-                    .OrderByDescending(x => x.SoLuong)
+                    .OrderByDescending(g => g.Quantity)
                     .Take(4)
-                    .Select(x => x.ThongTinSP)
                     .ToList();
-                ViewBag.TopSP = topSP;
+
+                // Trích xuất danh sách sản phẩm theo đúng thứ tự
+                ViewBag.TopSP = topSPWithQuantity.Select(x => x.Product).ToList();
+
+                // Tạo từ điển ánh xạ từ mã sản phẩm đến số lượng bán
+                // (để hiển thị trong view nếu cần)
+                ViewBag.TopSPQuantities = topSPWithQuantity.ToDictionary(x => x.Product.MaSp, x => x.Quantity);
+
+                // Nếu bạn muốn hiển thị thứ tự rõ ràng hơn, có thể thêm
+                ViewBag.TopSPRanks = new Dictionary<int, int>();
+                for (int i = 0; i < topSPWithQuantity.Count; i++)
+                {
+                    ViewBag.TopSPRanks[topSPWithQuantity[i].Product.MaSp] = i + 1;
+                }
+
 
                 // Tìm kiếm theo từ khóa
                 if (!string.IsNullOrEmpty(searchKey))
