@@ -35,6 +35,19 @@ namespace WebBanHang.Controllers
                     .Include(s => s.MaLoaiNavigation)
                     .Include(s => s.MaThNavigation);
 
+                //Top 4 sp
+                var topSP = query.Select(
+                    sp => new
+                    {
+                        ThongTinSP = sp,
+                        SoLuong = sp.ChiTietDonHangs.Sum(ct => (int?)ct.SoLuong) ?? 0,
+                    })
+                    .OrderByDescending(x => x.SoLuong)
+                    .Take(4)
+                    .Select(x => x.ThongTinSP)
+                    .ToList();
+                ViewBag.TopSP = topSP;
+
                 // Tìm kiếm theo từ khóa
                 if (!string.IsNullOrEmpty(searchKey))
                 {

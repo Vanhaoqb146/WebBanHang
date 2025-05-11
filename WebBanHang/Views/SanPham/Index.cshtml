@@ -7,6 +7,7 @@
     int PageNext = CurrentPage + 1;
     List<LoaiSanPham> dmsp = ViewBag.DMSP;
     List<SanPham> spm = ViewBag.SPM;
+    List<SanPham> TopSP = ViewBag.TopSP;
 
     // Chuẩn bị dictionary cho các tham số truy vấn
     var routeData = new Dictionary<string, string>
@@ -20,13 +21,74 @@
 }
 
 <!-- Begin Main Content Area -->
+
 <main class="main-content">
     <div class="breadcrumb-area breadcrumb-height" style="height:150px;background-color:#E3F0E1">
         <div class="container h-100">
             <div class="row h-100">
                 <div class="col-lg-12">
                     <div class="breadcrumb-item">
-                        <h2 class="breadcrumb-heading" style="font-family:Verdana">Sản phẩm</h2>
+                        <h2 class="breadcrumb-heading" style="font-family:Verdana">Top sản phẩm bán chạy</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-lg-5 mb-sm-3">
+        <div class="tab-content text-charcoal pt-8">
+            <div class="tab-pane fade show active" id="grid-view" role="tabpanel" aria-labelledby="grid-view-tab">
+                <div class="product-grid-view row mx-2">
+                    @if (TopSP != null && TopSP.Count() > 0)
+                    {
+                        foreach (var item in TopSP)
+                        {
+                            <div class="col-lg-3 col-sm-6 pt-6">
+                                <div class="product-item">
+                                    <div class="product-img img-zoom-effect">
+                                        <a href="sanpham/@item.MaSp">
+                                            <img class="img-full" src="~/images/sanpham/@item.Anh" alt="Product Images">
+                                        </a>
+                                        <div class="product-add-action">
+                                            <ul>
+                                                <li class="add-to-cart">
+                                                    <a href="javascript:void(0)">
+                                                        <i class="pe-7s-cart"></i>
+                                                    </a>
+                                                    <input hidden id="MaSp" name="MaSp" value="@item.MaSp" />
+                                                </li>
+                                                <li class="quantity">
+                                                    <div>
+                                                        <input hidden id="txtsoLuong" name="txtsoLuong" class="cart-plus-minus-box" value="1" type="text">
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="product-content">
+                                        <a style="display: block; height:72px" class="product-name" href="sanpham/@item.MaSp">@item.TenSp</a>
+                                        <div class="price-box pb-1">
+                                            <span class="old-price text-dark">@item.GiaBan.Value.ToString("#,##0") đ</span><br />
+                                            <span class="new-price text-danger">@item.GiaGiam.Value.ToString("#,##0") đ</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p>Chưa sản phẩm nào.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="breadcrumb-area breadcrumb-height" style="height:150px;background-color:#E3F0E1">
+        <div class="container h-100">
+            <div class="row h-100">
+                <div class="col-lg-12">
+                    <div class="breadcrumb-item">
+                        <h2 class="breadcrumb-heading" style="font-family:Verdana">Tất cả sản phẩm</h2>
                     </div>
                 </div>
             </div>
