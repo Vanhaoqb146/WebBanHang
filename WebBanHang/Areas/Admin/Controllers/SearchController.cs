@@ -57,8 +57,10 @@ namespace WebBanHang.Areas.Admin.Controllers
         public IActionResult TimDonHang(string searchKey)
         {
             List<DonHang> ls = new List<DonHang>();
+
             if (string.IsNullOrEmpty(searchKey) || searchKey.Length < 1)
             {
+                // Lấy danh sách đơn hàng mặc định
                 ls = _context.DonHangs
                     .AsNoTracking()
                     .Include(x => x.MaTtNavigation)
@@ -68,26 +70,35 @@ namespace WebBanHang.Areas.Admin.Controllers
             }
             else
             {
-                ls = _context.DonHangs
-                .AsNoTracking()
-                .Include(x => x.MaTtNavigation)
-                .Where(x => x.MaDh == Convert.ToInt32(searchKey))
-                .OrderByDescending(x => x.NgayDat)
-                .Take(10)
-                .ToList();
+                // Kiểm tra xem searchKey có phải là số hợp lệ không
+                if (int.TryParse(searchKey, out int maDh))
+                {
+                    // Tìm kiếm theo mã đơn hàng
+                    ls = _context.DonHangs
+                        .AsNoTracking()
+                        .Include(x => x.MaTtNavigation)
+                        .Where(x => x.MaDh == maDh)
+                        .OrderByDescending(x => x.NgayDat)
+                        .Take(10)
+                        .ToList();
+                }
+                else
+                {
+                    // Nếu searchKey không phải là số, trả về danh sách rỗng hoặc thông báo lỗi
+                    return PartialView("TimDonHangSearchPartial", null);
+                }
             }
 
-
-            if (ls == null)
+            if (ls == null || !ls.Any())
             {
                 return PartialView("TimDonHangSearchPartial", null);
             }
             else
             {
                 return PartialView("TimDonHangSearchPartial", ls);
-
             }
         }
+
         public IActionResult TimKH(string searchKey)
         {
             List<KhachHang> ls = new List<KhachHang>();
