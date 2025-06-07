@@ -31,7 +31,7 @@ namespace WebBanHang.Areas.Admin.Controllers
         }
 
         // GET: Admin/DonHangs
-        public IActionResult Index(int page = 1, int TrangThai = 0)
+        public IActionResult Index(int page = 1, int TrangThai = 0, string searchKey = null, DateTime? startDate = null, DateTime? endDate = null)
         {
             var taikhoanID = HttpContext.Session.GetString("AdminId");
             if (string.IsNullOrEmpty(taikhoanID))
@@ -42,49 +42,66 @@ namespace WebBanHang.Areas.Admin.Controllers
             var pageNumber = page;
             var pageSize = 10;
 
-            List<DonHang> lsDonHang = new List<DonHang>();
+            // Bắt đầu với IQueryable để xây dựng truy vấn động
+            IQueryable<DonHang> query = _context.DonHangs
+                .AsNoTracking()
+                .Include(x => x.MaTtNavigation)
+                .OrderByDescending(x => x.MaDh);
 
-            //filter op
+            // Lọc theo trạng thái nếu có
             if (TrangThai != 0)
             {
-                lsDonHang = _context.DonHangs
-                .AsNoTracking()
-                .Include(x => x.MaTtNavigation)
-                .Where(x => x.MaTt == TrangThai)
-                .OrderByDescending(x => x.MaDh).ToList();
+                query = query.Where(x => x.MaTt == TrangThai);
             }
-            else
+
+            // Lọc theo mã đơn hàng
+            if (!string.IsNullOrEmpty(searchKey))
             {
-                lsDonHang = _context.DonHangs
-                .AsNoTracking()
-                .Include(x => x.MaTtNavigation)
-                .OrderByDescending(x => x.MaDh).ToList();
+                if (int.TryParse(searchKey, out int maDh))
+                {
+                    query = query.Where(x => x.MaDh == maDh);
+                }   
             }
 
-            //page
-            PagedList<DonHang> models = new PagedList<DonHang>(lsDonHang.AsQueryable(), pageNumber, pageSize);
+            // THÊM BỘ LỌC THEO THỜI GIAN
+            if (startDate.HasValue)
+            {
+                query = query.Where(x => x.NgayDat.Value.Date >= startDate.Value.Date);
+            }
+            if (endDate.HasValue)
+            {
+                // Để lấy cả các đơn hàng trong ngày kết thúc, ta so sánh với ngày sau đó 1 ngày
+                query = query.Where(x => x.NgayDat.Value.Date <= endDate.Value.Date);
+            }
 
+            // Phân trang trên IQueryable
+            PagedList<DonHang> models = new PagedList<DonHang>(query, pageNumber, pageSize);
+
+            // Truyền lại các giá trị lọc/tìm kiếm sang View
             ViewBag.CurrentPage = pageNumber;
             ViewBag.CurrentTrangThai = TrangThai;
+            ViewBag.CurrentSearchKey = searchKey;
+            ViewBag.CurrentStartDate = startDate?.ToString("yyyy-MM-dd"); // (MỚI)
+            ViewBag.CurrentEndDate = endDate?.ToString("yyyy-MM-dd");   // (MỚI)
 
-            //lấy slted value
             ViewData["lsTrangThai"] = new SelectList(_context.TrangThaiDonHangs, "MaTt", "TenTt", TrangThai);
 
             return View(models);
         }
-        public IActionResult Filter(int TrangThai = 0)
-        {
-            var url = $"/Admin/DonHangs?TrangThai={TrangThai}";
-            if (TrangThai == 0)
-            {
-                url = $"/Admin/DonHangs";
-            }
-            else
-            {
-                //if(maLoai==0) url = $"/Admin/SanPhams?maTh={maTh}&stt={stt}";
-            }
-            return Json(new { status = "success", RedirectUrl = url });
-        }
+
+        //public IActionResult Filter(int TrangThai = 0)
+        //{
+        //    var url = $"/Admin/DonHangs?TrangThai={TrangThai}";
+        //    if (TrangThai == 0)
+        //    {
+        //        url = $"/Admin/DonHangs";
+        //    }
+        //    else
+        //    {
+        //        //if(maLoai==0) url = $"/Admin/SanPhams?maTh={maTh}&stt={stt}";
+        //    }
+        //    return Json(new { status = "success", RedirectUrl = url });
+        //}
 
         // GET: Admin/DonHangs/Details/5
         public async Task<IActionResult> Details(int? id)

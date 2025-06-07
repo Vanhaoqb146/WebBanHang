@@ -72,6 +72,49 @@
             color: #000;
             text-shadow: 0 0 5px #4099a1;
         }
+
+    /* Style chung cho cả hai nút */
+    .btn-shopping {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 12px 24px;
+        font-weight: 600;
+        font-size: 16px;
+        letter-spacing: 0.5px;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        margin-top: 15px;
+    }
+
+    /* Style cho nút Mua Hàng */
+    .btn-buy {
+        background: linear-gradient(45deg, #4099a1, #2c7a8d);
+        color: white;
+        border: none;
+    }
+
+        .btn-buy:hover {
+            background: linear-gradient(45deg, #2c7a8d, #1d5f6f);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn-buy:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
+        }
+
+    /* Style cho nút Hết Hàng */
+    .btn-sold-out {
+        background: linear-gradient(45deg, #9e9e9e, #757575);
+        color: white;
+        border: none;
+        cursor: not-allowed;
+    }
 </style>
 
 
@@ -152,17 +195,18 @@
                                             </span>
                                         </div>
                                     </div>
+                                    <!-- Nút MUA HÀNG -->
                                     @if (Model.SoLuongCo > 0)
                                     {
-                                        <div class="col-sm-3 add-to-cart">
-                                            <a class="btn btn-custom-size lg-size btn-primary btn-secondary-hover rounded-0" href="javascript:void(0)">Thêm vào giỏ</a>
+                                        <div class="col-sm-12">
+                                            <a class="btn btn-custom-size lg-size btn-secondary-hover rounded-0 btn-shopping btn-buy add-to-cart" href="javascript:void(0)">MUA HÀNG</a>
                                             <input hidden asp-for="MaSp" />
                                         </div>
                                     }
                                     else
                                     {
-                                        <div class="col-sm-3">
-                                            <a class="btn btn-custom-size lg-size btn-primary btn-secondary-hover rounded-0" href="javascript:void(0)">HẾT HÀNG</a>
+                                        <div class="col-sm-12">
+                                            <a class="btn btn-custom-size lg-size btn-secondary-hover rounded-0 btn-shopping btn-sold-out" href="javascript:void(0)">HẾT HÀNG</a>
                                             <input hidden asp-for="MaSp" />
                                         </div>
                                     }
@@ -461,7 +505,7 @@
                     $("#miniCart").load("/AjaxContent/HeaderCart");
                     $("#numberCart").load("/AjaxContent/NumberCart");
                 }
-                $(".add-to-cart").click(function () {
+                $("a.add-to-cart").click(function () {
                     var productid = $(this).find('.maSp').val() || $('#MaSp').val(); // Lấy từ class .maSp hoặc id #MaSp
                     var soLuong = $(this).closest('.product-add-action').find('.txtsoLuong').val() || $('#txtsoLuong').val(); // Lấy từ class .txtsoLuong hoặc id #txtsoLuong
 
@@ -533,7 +577,7 @@
                 if (valueCurrent <= maxValue) {
                     $(".btn-number[data-type='plus'][data-field='" + name + "']").removeAttr('disabled');
                 } else {
-                    alert('Vượt quá số lượng có');
+                    alert('Vượt quá số lượng có. Vui lòng liên hệ cửa hàng để được tư vấn!');
                     $(this).val($(this).data('oldValue'));
                 }
             });

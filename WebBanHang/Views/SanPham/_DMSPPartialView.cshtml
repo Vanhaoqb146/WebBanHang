@@ -1,19 +1,26 @@
 ﻿@model List<LoaiSanPham>
-
+@{
+    int currentMaLoai = ViewBag.CurrentMaLoai ?? 0;
+}
 <div class="widgets-area mb-9">
     <h2 class="widgets-title mb-5">Danh mục</h2>
     <div class="widgets-item">
         <ul class="widgets-category">
+            <li>
+                <a href="/sanpham" class="category-link @(currentMaLoai == 0 ? "active text-primary fw-bold" : "")" data-category="0">
+                    Tất cả sản phẩm
+                    <span></span>
+                </a>
+            </li>
             @foreach (var item in Model)
             {
                 <li>
-                    <a href="/sanphams/@item.MaLoai">
+                    <a href="/sanphams/@item.MaLoai" class="category-link @(currentMaLoai == item.MaLoai ? "active text-primary fw-bold" : "")" data-category="@item.MaLoai">
                         @item.TenLoai
                         <span></span>
                     </a>
                 </li>
             }
-
         </ul>
     </div>
 </div>

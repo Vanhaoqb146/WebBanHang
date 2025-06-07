@@ -165,20 +165,38 @@ namespace WebBanHang.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            try
+            // Kiểm tra xem có sản phẩm nào thuộc loại này không
+            var coSanPham = await _context.SanPhams.AnyAsync(p => p.MaLoai == id);
+
+            if (coSanPham)
             {
-                var loaiSanPham = await _context.LoaiSanPhams.FindAsync(id);
-                _context.LoaiSanPhams.Remove(loaiSanPham);
-                await _context.SaveChangesAsync();
-                _notyfService.Success("Xóa thành công");
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                _notyfService.Warning("Xóa thất bại");
+                // Nếu có sản phẩm, hiển thị thông báo lỗi cụ thể và không xóa
+                _notyfService.Error("Không thể xóa loại sản phẩm này vì vẫn còn sản phẩm thuộc loại này. Vui lòng chuyển các sản phẩm sang loại khác hoặc xóa chúng trước.");
                 return RedirectToAction(nameof(Index));
             }
 
+            //Nếu không có sản phẩm nào, tiến hành xóa
+            try
+            {
+                var loaiSanPham = await _context.LoaiSanPhams.FindAsync(id);
+                if (loaiSanPham != null)
+                {
+                    _context.LoaiSanPhams.Remove(loaiSanPham);
+                    await _context.SaveChangesAsync();
+                    _notyfService.Success("Xóa loại sản phẩm thành công");
+                }
+                else
+                {
+                    _notyfService.Error("Không tìm thấy loại sản phẩm");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Bắt các lỗi không mong muốn khác
+                _notyfService.Error("Đã xảy ra lỗi trong quá trình xóa: " + ex.Message);
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
         private bool LoaiSanPhamExists(int id)

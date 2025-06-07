@@ -17,7 +17,7 @@ using WebBanHang.ModelViews;
 
 namespace WebBanHang.Controllers
 {
-   
+
     public class AccountsController : Controller
     {
         private readonly dbBanHangContext _context;
@@ -200,44 +200,118 @@ namespace WebBanHang.Controllers
                 if (ModelState.IsValid)
                 {
                     bool isEmail = Utilities.IsValidEmail(customer.UserName);
-                    if (!isEmail) return View(customer);
-
-                    var khachhang = _context.KhachHangs.AsNoTracking()
-                        .SingleOrDefault(x => x.Email.Trim() == customer.UserName);
-                    if (khachhang == null)
+                    if (!isEmail)
                     {
-                        _notyfService.Warning("Thông tin đăng nhập không chính xác");
+                        _notyfService.Warning("Username phải là Email");
                         return View(customer);
                     }
 
-                    string pass = (customer.Password + khachhang.Salt.Trim()).ToMD5();
-                    if (khachhang.MatKhau != pass)
+                    // --- BƯỚC 1: KIỂM TRA TÀI KHOẢN ADMIN ---
+                    //  bảng Admin có cột Email và Password (chưa mã hóa salt)
+                    var admin = _context.QuanTriViens.AsNoTracking().SingleOrDefault(x => x.Email.Trim().ToLower() == customer.UserName.Trim().ToLower());
+                    if (admin != null)
                     {
-                        _notyfService.Warning("Thông tin đăng nhập không chính xác");
-                        return View(customer);
-                    }
-                    if (khachhang.Khoa == true)
+                        //  mật khẩu Admin không dùng Salt, nếu có thêm logic mã hóa tương tự Khách hàng
+                        if (admin.MatKhau == customer.Password)
+                        {
+                            // Identity
+                            var claims = new List<Claim>
                     {
-                        _notyfService.Error("Tài khoản bị khóa");
-                        return View(customer);
+                        new Claim(ClaimTypes.Name, admin.TenQtv), //  cột Ten
+                        new Claim("AccountId", admin.MaQtv.ToString()), // Primary Key là MaQtv
+                        new Claim(ClaimTypes.Role, "Admin") // Đặt vai trò là Admin
+                    };
+                            ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                            ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+                            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal);
+
+                            // Session
+                            HttpContext.Session.SetString("AdminId", admin.MaQtv.ToString());
+                            HttpContext.Session.SetString("Role", "Admin");
+
+                            _notyfService.Success("Đăng nhập Admin thành công");
+                            // Chuyển hướng đến trang quản trị của Admin
+                            return RedirectToAction("Index", "Home", new { Area = "Admin" });
+                        }
                     }
 
-                    // Lưu session
-                    HttpContext.Session.SetString("CustomerId", khachhang.MaKh.ToString());
-                    var taikhoanID = HttpContext.Session.GetString("CustomerId");
 
-                    // Identity
-                    var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, khachhang.TenKh),
-                new Claim("CustomerId", khachhang.MaKh.ToString())
-            };
-                    ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                    ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal);
+                    // --- BƯỚC 2: KIỂM TRA TÀI KHOẢN SHIPPER ---
+                    //bảng Shipper có cột Email và MatKhau
+                    var shipper = _context.Shippers.AsNoTracking().SingleOrDefault(x => x.Email.Trim().ToLower() == customer.UserName.Trim().ToLower());
+                    if (shipper != null)
+                    {
+                        // mật khẩu Shipper cũng không dùng Salt
+                        if (shipper.MatKhau == customer.Password)
+                        {
+                            var claims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.Name, shipper.TenShipper), //  cột Ten
+                        new Claim("AccountId", shipper.MaShipper.ToString()), // PK là MaShipper
+                        new Claim(ClaimTypes.Role, "Shipper")
+                    };
+                            ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                            ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+                            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal);
 
-                    _notyfService.Success("Đăng nhập thành công");
-                    return RedirectToAction("Index", "Home");
+                            HttpContext.Session.SetString("ShipId", shipper.MaShipper.ToString());
+                            HttpContext.Session.SetString("Role", "Shipper");
+
+                            _notyfService.Success("Đăng nhập Shipper thành công");
+                            return RedirectToAction("Index", "Home", new { Area = "Ship" }); // Chuyển đến trang của Shipper
+                        }
+                    }
+
+
+                    // --- BƯỚC 3: KIỂM TRA TÀI KHOẢN KHÁCH HÀNG  ---
+                    var khachhang = _context.KhachHangs.AsNoTracking().SingleOrDefault(x => x.Email.Trim().ToLower() == customer.UserName.Trim().ToLower());
+                    if (khachhang != null)
+                    {
+                        string pass = (customer.Password + khachhang.Salt.Trim()).ToMD5();
+                        if (khachhang.MatKhau != pass)
+                        {
+                            _notyfService.Warning("Thông tin đăng nhập không chính xác");
+                            return View(customer);
+                        }
+                        if (khachhang.Khoa == true)
+                        {
+                            _notyfService.Error("Tài khoản của bạn đã bị khóa");
+                            return View(customer);
+                        }
+
+                        // Lưu session
+                        HttpContext.Session.SetString("CustomerId", khachhang.MaKh.ToString()); // Giữ lại CustomerId để tương thích code cũ
+                        HttpContext.Session.SetString("Role", "Customer");
+
+                        // Identity
+                        var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, khachhang.TenKh),
+                    new Claim("CustomerId", khachhang.MaKh.ToString()),
+                    new Claim(ClaimTypes.Role, "Customer")
+                };
+                        ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                        ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+                        // Tạo thuộc tính xác thực
+                        var authProperties = new AuthenticationProperties
+                        {
+                            // IsPersistent = false sẽ tạo session cookie. 
+                            // Khi trình duyệt đóng, cookie sẽ mất.
+                            IsPersistent = false
+                        };
+
+                        // Đăng nhập với thuộc tính đã tạo
+                        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal, authProperties);
+
+                        _notyfService.Success("Đăng nhập thành công");
+                        // Chuyển về trang chủ
+                        return RedirectToAction("Index", "Home");
+                    }
+
+
+                    // --- BƯỚC 4: NẾU KHÔNG TÌM THẤY BẤT KỲ TÀI KHOẢN NÀO ---
+                    _notyfService.Warning("Thông tin đăng nhập không chính xác");
+                    return View(customer);
                 }
             }
             catch (Exception ex)
@@ -252,8 +326,10 @@ namespace WebBanHang.Controllers
         [Route("dangxuat", Name = "DangXuat")]
         public IActionResult DangXuat()
         {
-            HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme); // Sửa scheme thành "Cookies"
+            HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             HttpContext.Session.Remove("CustomerId");
+            HttpContext.Session.Remove("AccountId"); // Xóa session mới
+            HttpContext.Session.Remove("Role");      // Xóa session mới
             return RedirectToAction("Index", "Home");
         }
 

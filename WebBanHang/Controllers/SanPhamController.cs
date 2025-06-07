@@ -32,26 +32,16 @@ namespace WebBanHang.Controllers
                 // Lấy danh sách sản phẩm
                 IQueryable<SanPham> query = _context.SanPhams
                     .AsNoTracking()
+                    .Where(p => p.DaXoa == false)
                     .Include(s => s.MaLoaiNavigation)
                     .Include(s => s.MaThNavigation);
 
                 //Top 4 sp
-                //var topSP = query.Select(
-                //    sp => new
-                //    {
-                //        ThongTinSP = sp,
-                //        SoLuong = sp.ChiTietDonHangs.Sum(ct => (int?)ct.SoLuong) ?? 0,
-                //    })
-                //    .OrderByDescending(x => x.SoLuong)
-                //    .Take(4)
-                //    .Select(x => x.ThongTinSP)
-                //    .ToList();
-                //ViewBag.TopSP = topSP;
-                // Lưu trữ kết quả truy vấn đầy đủ (bao gồm cả sản phẩm và số lượng bán)
+
                 var topSPWithQuantity = _context.ChiTietDonHangs
                     .Include(ct => ct.MaSpNavigation)
                     .Include(ct => ct.MaDhNavigation)
-                    .Where(ct => ct.MaDhNavigation.MaTt == 4)
+                    .Where(ct => ct.MaDhNavigation.MaTt == 4 && ct.MaSpNavigation.DaXoa == false)
                     .GroupBy(ct => ct.MaSpNavigation)
                     .Select(g => new
                     {
@@ -69,7 +59,7 @@ namespace WebBanHang.Controllers
                 // (để hiển thị trong view nếu cần)
                 ViewBag.TopSPQuantities = topSPWithQuantity.ToDictionary(x => x.Product.MaSp, x => x.Quantity);
 
-                // Nếu bạn muốn hiển thị thứ tự rõ ràng hơn, có thể thêm
+
                 ViewBag.TopSPRanks = new Dictionary<int, int>();
                 for (int i = 0; i < topSPWithQuantity.Count; i++)
                 {
@@ -157,6 +147,7 @@ namespace WebBanHang.Controllers
 
                 // Lấy sản phẩm mới
                 var spmoi = _context.SanPhams
+                    .Where(p => p.DaXoa == false)
                     .AsNoTracking()
                     .Include(s => s.MaLoaiNavigation)
                     .Include(s => s.MaThNavigation)
@@ -165,6 +156,7 @@ namespace WebBanHang.Controllers
                     .ToList();
                 ViewBag.SPM = spmoi;
 
+                ViewBag.CurrentMaLoai = 0; // tất cả sản phẩm
                 return View(models);
             }
             catch (Exception ex)
@@ -211,7 +203,7 @@ namespace WebBanHang.Controllers
                 // Lấy danh sách sản phẩm với điều kiện MaLoai
                 IQueryable<SanPham> query = _context.SanPhams
                     .AsNoTracking()
-                    .Where(x => x.MaLoai == MaLoai)
+                    .Where(x => x.MaLoai == MaLoai && x.DaXoa == false)
                     .Include(s => s.MaLoaiNavigation)
                     .Include(s => s.MaThNavigation);
 
@@ -289,15 +281,16 @@ namespace WebBanHang.Controllers
 
                 // Lấy sản phẩm mới cho sidebar
                 var spmoi = _context.SanPhams
-     .AsNoTracking()
-     .Include(s => s.MaLoaiNavigation)
-     .Include(s => s.MaThNavigation)
-     .OrderByDescending(x => x.MaSp)
-     .Take(3)
-     .ToList() ?? new List<SanPham>();
+                 .Where(p => p.DaXoa == false)
+                 .AsNoTracking()
+                 .Include(s => s.MaLoaiNavigation)
+                 .Include(s => s.MaThNavigation)
+                 .OrderByDescending(x => x.MaSp)
+                 .Take(3)
+                 .ToList() ?? new List<SanPham>();
                 ViewBag.SPM = spmoi;
 
-
+                ViewBag.CurrentMaLoai = MaLoai; // Lưu mã loại sản phẩm hiện tại
                 return View(models);
             }
             catch (Exception ex)
@@ -313,6 +306,7 @@ namespace WebBanHang.Controllers
             try
             {
                 var product = _context.SanPhams
+                .Where(x => x.DaXoa == false)
                 .Include(x => x.MaLoaiNavigation)
                 .Include(x => x.MaThNavigation)
                 .FirstOrDefault(x => x.MaSp == id);
@@ -324,7 +318,7 @@ namespace WebBanHang.Controllers
 
                 var lsProduct = _context.SanPhams
                     .AsNoTracking()
-                    .Where(x => x.MaLoai == product.MaLoai && x.MaSp != id)
+                    .Where(x => x.MaLoai == product.MaLoai && x.MaSp != id && x.DaXoa == false)
                     .Take(4)
                     .OrderByDescending(x => x.MaSp)
                     .ToList();

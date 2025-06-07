@@ -36,25 +36,36 @@
                         </div>
                         <div class="header-right">
                             <ul>
-                                <li class="dropdown d-none d-md-block">
-                                    <button class="btn btn-link dropdown-toggle ht-btn p-0" type="button" id="settingButton" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="pe-7s-users"></i>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="settingButton">
-                                        @if (User.Identity.IsAuthenticated)
-                                        {
-                                            <li><a class="dropdown-item" href="/taikhoan">Tài khoản của tôi</a></li>
-                                        }
-                                        else
-                                        {
+                                @if (User.Identity.IsAuthenticated && User.IsInRole("Customer"))
+                                {
+                                    <li class="d-none d-md-block">
+                                        <a class="btn btn-link ht-btn p-0" asp-controller="Accounts" asp-action="Dashboard">
+                                            Xin chào, @User.Identity.Name
+                                        </a>
+                                    </li>
+                                    <li class="d-none d-md-block">
+                                        <a class="btn btn-link ht-btn p-0" asp-controller="Accounts" asp-action="DangXuat">
+                                            <i class="pe-7s-power" style="font-size: 25px" ></i>
+                                        </a>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li class="dropdown d-none d-md-block">
+                                        <button class="btn btn-link dropdown-toggle ht-btn p-0" type="button" id="settingButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="pe-7s-users"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="settingButton">
                                             <li><a class="dropdown-item" href="/dangky">Đăng ký</a></li>
                                             <li><a class="dropdown-item" href="/dangnhap">Đăng nhập</a></li>
-                                        }
-                                    </ul>
-                                </li>
+                                        </ul>
+                                    </li>
+                                }
+
                                 @await Component.InvokeAsync("NumberCart")
                             </ul>
                         </div>
+                       
                     </div>
                 </div>
             </div>

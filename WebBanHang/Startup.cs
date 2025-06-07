@@ -1,4 +1,4 @@
-using AspNetCoreHero.ToastNotification;
+﻿using AspNetCoreHero.ToastNotification;
 using DinkToPdf.Contracts;
 using DinkToPdf;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -38,12 +38,12 @@ namespace WebBanHang
 
             services.AddSingleton<HtmlEncoder>(HtmlEncoder.Create(allowedRanges: new[] { UnicodeRanges.All }));
 
-            // Th�m HttpContextAccessor
+            // Thêm HttpContextAccessor
             services.AddHttpContextAccessor();
 
             services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.IdleTimeout = TimeSpan.FromMinutes(30);// thời gian có hiệu lực
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
@@ -78,7 +78,7 @@ namespace WebBanHang
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
-            app.UseSession();
+            app.UseSession(); //SessionMiddleware
 
             app.UseRouting();
             app.UseAuthentication();

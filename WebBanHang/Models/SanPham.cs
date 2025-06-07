@@ -43,6 +43,8 @@ namespace WebBanHang.Models
         public int? MaLoai { get; set; }
         [Required(ErrorMessage = "Vui lòng nhập")]
         public int? MaTh { get; set; }
+        // mới thêm cột DaXoa
+        public bool? DaXoa { get; set; }
 
         public virtual LoaiSanPham MaLoaiNavigation { get; set; }
         public virtual ThuongHieu MaThNavigation { get; set; }

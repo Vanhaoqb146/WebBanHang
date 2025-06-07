@@ -24,7 +24,8 @@ namespace WebBanHang.Controllers
             get
             {
                 var gh = HttpContext.Session.Get<List<CartItem>>("GioHang");
-                if (gh == default(List<CartItem>)){
+                if (gh == default(List<CartItem>))
+                {
                     gh = new List<CartItem>();
                 }
                 return gh;
@@ -42,7 +43,7 @@ namespace WebBanHang.Controllers
                 CartItem item = cart.SingleOrDefault(p => p.product.MaSp == productID);
                 if (item != null)
                 {
-                    SanPham hh = _context.SanPhams.SingleOrDefault(p => p.MaSp == productID);
+                    SanPham hh = _context.SanPhams.SingleOrDefault(p => p.MaSp == productID && p.DaXoa == false);
                     if (amount.Value + item.amount >= hh.SoLuongCo)
                     {
                         item.amount = (int)hh.SoLuongCo;
@@ -57,7 +58,7 @@ namespace WebBanHang.Controllers
                 }
                 else
                 {
-                    SanPham hh = _context.SanPhams.SingleOrDefault(p => p.MaSp == productID);
+                    SanPham hh = _context.SanPhams.SingleOrDefault(p => p.MaSp == productID && p.DaXoa == false);
                     item = new CartItem
                     {
                         amount = amount.HasValue ? amount.Value : 1,
@@ -68,7 +69,7 @@ namespace WebBanHang.Controllers
                 //luu sesion
                 HttpContext.Session.Set<List<CartItem>>("GioHang", cart);
                 _notyfService.Success("Thêm sản phẩm thành công");
-                return Json(new {success= true});
+                return Json(new { success = true });
             }
             catch
             {
@@ -89,9 +90,9 @@ namespace WebBanHang.Controllers
                 {
                     CartItem item = cart.SingleOrDefault(p => p.product.MaSp == productID);
                     //
-                    SanPham hh = _context.SanPhams.SingleOrDefault(p => p.MaSp == productID);
+                    SanPham hh = _context.SanPhams.SingleOrDefault(p => p.MaSp == productID && p.DaXoa == false);
                     //
-                    if (item!=null && amount.HasValue)
+                    if (item != null && amount.HasValue)
                     {
                         if (amount.Value >= hh.SoLuongCo)
                         {

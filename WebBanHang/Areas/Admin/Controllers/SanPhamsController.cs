@@ -27,7 +27,8 @@ namespace WebBanHang.Areas.Admin.Controllers
         }
 
         // GET: Admin/SanPhams
-        public async Task<IActionResult> Index(int page = 1, int MaLoai = 0, int? GiaTu = null, int? GiaDen = null)
+        // SỬA LẠI ACTION INDEX
+        public async Task<IActionResult> Index(int page = 1, int MaLoai = 0, int? GiaTu = null, int? GiaDen = null, string trangThai = "all", string searchKey = null)
         {
             var taikhoanID = HttpContext.Session.GetString("AdminId");
             if (string.IsNullOrEmpty(taikhoanID))
@@ -38,59 +39,54 @@ namespace WebBanHang.Areas.Admin.Controllers
             var pageNumber = page;
             var pageSize = 10;
 
-            // Debug: Kiểm tra giá trị tham số nhận được
-            System.Diagnostics.Debug.WriteLine($"Index - MaLoai: {MaLoai}, GiaTu: {GiaTu}, GiaDen: {GiaDen}");
-
-            // Khởi tạo truy vấn với Include
             var query = _context.SanPhams
                 .AsNoTracking()
                 .Include(s => s.MaLoaiNavigation)
                 .Include(s => s.MaThNavigation)
                 .AsQueryable();
 
-            // Lọc theo loại sản phẩm nếu có
-            if (MaLoai > 0) // Chỉ lọc khi chọn một loại cụ thể
+            // THÊM LẠI LOGIC TÌM KIẾM (MỚI)
+            if (!string.IsNullOrEmpty(searchKey))
+            {
+                query = query.Where(x => x.TenSp.ToLower().Contains(searchKey.ToLower()));
+            }
+
+            if (trangThai == "active")
+            {
+                query = query.Where(p => p.DaXoa == false);
+            }
+            else if (trangThai == "inactive")
+            {
+                query = query.Where(p => p.DaXoa == true);
+            }
+
+            if (MaLoai > 0)
             {
                 query = query.Where(x => x.MaLoai == MaLoai);
             }
-
-            // Lọc theo khoảng giá (dựa trên GiaBan)
             if (GiaTu.HasValue && GiaTu > 0)
             {
                 query = query.Where(x => x.GiaBan.HasValue && x.GiaBan >= GiaTu.Value);
             }
-
             if (GiaDen.HasValue && GiaDen > 0)
             {
                 query = query.Where(x => x.GiaBan.HasValue && x.GiaBan <= GiaDen.Value);
             }
 
-            // Thực hiện truy vấn và sắp xếp
-            var lsSanPham = query.OrderByDescending(x => x.MaSp).ToList();
-
-            // Debug: Kiểm tra số lượng sản phẩm sau khi lọc
-            System.Diagnostics.Debug.WriteLine($"Số sản phẩm sau khi lọc: {lsSanPham.Count}");
-
-            // Phân trang
+            var lsSanPham = await query.OrderByDescending(x => x.MaSp).ToListAsync();
             PagedList<SanPham> models = new PagedList<SanPham>(lsSanPham.AsQueryable(), pageNumber, pageSize);
 
-            // Truyền giá trị bộ lọc hiện tại sang view
+            ViewBag.CurrentSearchKey = searchKey; // (MỚI)
             ViewBag.CurrentPage = pageNumber;
             ViewBag.CurrentMaLoai = MaLoai;
             ViewBag.CurrentGiaTu = GiaTu;
             ViewBag.CurrentGiaDen = GiaDen;
+            ViewBag.CurrentTrangThai = trangThai;
 
-            // Thêm thông báo nếu không có sản phẩm
             if (!lsSanPham.Any())
             {
                 ViewBag.Message = "Không tìm thấy sản phẩm nào thỏa mãn điều kiện lọc.";
             }
-
-            // Tùy chọn lọc
-            List<SelectListItem> lsQuantityStt = new List<SelectListItem>();
-            lsQuantityStt.Add(new SelectListItem() { Text = "Còn hàng", Value = "1" });
-            lsQuantityStt.Add(new SelectListItem() { Text = "Hết hàng", Value = "0" });
-            ViewData["lsQuantityStt"] = lsQuantityStt;
 
             ViewData["LoaiSP"] = new SelectList(_context.LoaiSanPhams, "MaLoai", "TenLoai", MaLoai);
             ViewData["ThuongHieu"] = new SelectList(_context.ThuongHieus, "MaTh", "TenTh");
@@ -99,28 +95,28 @@ namespace WebBanHang.Areas.Admin.Controllers
         }
 
         // Filter
-        public IActionResult Filter(int MaLoai = 0, int? GiaTu = null, int? GiaDen = null)
+        // SỬA LẠI ACTION FILTER
+        public IActionResult Filter(int MaLoai = 0, int? GiaTu = null, int? GiaDen = null, string trangThai = "all", string searchKey = null)
         {
-            // Xây dựng URL với các tham số lọc
-            var url = "/Admin/SanPhams?page=1"; // Luôn bắt đầu từ trang 1 khi lọc
+            var url = $"/Admin/SanPhams?page=1&trangThai={trangThai}";
 
-            if (MaLoai > 0) // Chỉ thêm vào URL nếu có chọn loại sản phẩm
+            if (MaLoai > 0)
             {
                 url += $"&MaLoai={MaLoai}";
             }
-
             if (GiaTu.HasValue && GiaTu > 0)
             {
                 url += $"&GiaTu={GiaTu.Value}";
             }
-
             if (GiaDen.HasValue && GiaDen > 0)
             {
                 url += $"&GiaDen={GiaDen.Value}";
             }
-
-            // Debug: Kiểm tra URL được tạo
-            System.Diagnostics.Debug.WriteLine($"URL Redirect: {url}");
+            // THÊM LẠI LOGIC TÌM KIẾM (MỚI)
+            if (!string.IsNullOrEmpty(searchKey))
+            {
+                url += $"&searchKey={searchKey}";
+            }
 
             return Json(new { status = "success", redirectUrl = url });
         }
@@ -216,17 +212,33 @@ namespace WebBanHang.Areas.Admin.Controllers
             {
                 try
                 {
-                    sanPham.TenSp = Utilities.ToTitleCase(sanPham.TenSp);
+                    // Bước 1: Tải đối tượng gốc từ Database
+                    var sanPhamToUpdate = await _context.SanPhams.FindAsync(id);
+                    if (sanPhamToUpdate == null)
+                    {
+                        return NotFound();
+                    }
+
+                    // Bước 2: Cập nhật các thuộc tính từ form vào đối tượng gốc
+                    sanPhamToUpdate.TenSp = Utilities.ToTitleCase(sanPham.TenSp);
+                    sanPhamToUpdate.GiaBan = sanPham.GiaBan;
+                    sanPhamToUpdate.GiaGiam = sanPham.GiaGiam;
+                    sanPhamToUpdate.SoLuongCo = sanPham.SoLuongCo;
+                    sanPhamToUpdate.MoTa = sanPham.MoTa;
+                    sanPhamToUpdate.BaoHanh = sanPham.BaoHanh;
+                    sanPhamToUpdate.MaLoai = sanPham.MaLoai;
+                    sanPhamToUpdate.MaTh = sanPham.MaTh;
+
+
                     if (fAnh != null)
                     {
                         string extension = Path.GetExtension(fAnh.FileName);
-                        string img = Utilities.SEOUrl(sanPham.TenSp) + extension;
-                        sanPham.Anh = await Utilities.UploadFile(fAnh, @"sanpham", img.ToLower());
+                        string img = Utilities.SEOUrl(sanPham.TenSp) + "-" + Utilities.RandomGuid() + extension; // Tạo tên file ảnh mới để tránh cache
+                        sanPhamToUpdate.Anh = await Utilities.UploadFile(fAnh, @"sanpham", img.ToLower());
                     }
-                    if (string.IsNullOrEmpty(sanPham.TenSp)) sanPham.Anh = "default.jpg";
 
-                    _context.Update(sanPham);
-                    await _context.SaveChangesAsync();
+                    _context.Update(sanPhamToUpdate); // Bước 3: Đánh dấu đối tượng là đã thay đổi
+                    await _context.SaveChangesAsync(); // Bước 4: Lưu vào DB
                     _notyfService.Success("Cập nhật thành công");
                 }
                 catch (DbUpdateConcurrencyException)
@@ -272,24 +284,70 @@ namespace WebBanHang.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            var daPhatSinhGiaoDich = await _context.ChiTietDonHangs.AsNoTracking().AnyAsync(ct => ct.MaSp == id);
+
+            if (daPhatSinhGiaoDich)
+            {
+                try
+                {
+                    var sanPhamToUpdate = await _context.SanPhams.FindAsync(id);
+                    if (sanPhamToUpdate != null)
+                    {
+                        sanPhamToUpdate.DaXoa = true;
+                        _context.Update(sanPhamToUpdate);
+                        await _context.SaveChangesAsync();
+                        _notyfService.Success("Sản phẩm đã được chuyển sang trạng thái Ngừng kinh doanh.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _notyfService.Error("Lỗi khi cập nhật trạng thái sản phẩm: " + ex.Message);
+                }
+                return RedirectToAction(nameof(Index));
+            }
+
             try
             {
-                var sanPham = await _context.SanPhams.FindAsync(id);
-                _context.SanPhams.Remove(sanPham);
-                await _context.SaveChangesAsync();
-                _notyfService.Success("Xóa thành công");
-                return RedirectToAction(nameof(Index));
+                var sanPhamToDelete = await _context.SanPhams.FindAsync(id);
+                if (sanPhamToDelete != null)
+                {
+                    _context.SanPhams.Remove(sanPhamToDelete);
+                    await _context.SaveChangesAsync();
+                    _notyfService.Success("Đã xóa sản phẩm thành công vì chưa có trong đơn hàng.");
+                }
             }
-            catch
+            catch (Exception ex)
             {
-                _notyfService.Warning("Xóa thất bại");
-                return RedirectToAction(nameof(Index));
+                _notyfService.Error("Lỗi khi xóa sản phẩm: " + ex.Message);
             }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // THÊM MỚI ACTION RESTORE
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Restore(int id)
+        {
+            var sanPham = await _context.SanPhams.FindAsync(id);
+            if (sanPham != null)
+            {
+                sanPham.DaXoa = false; // Chuyển trạng thái về đang bán
+                _context.Update(sanPham);
+                await _context.SaveChangesAsync();
+                _notyfService.Success("Đã phục hồi sản phẩm thành công!");
+            }
+            else
+            {
+                _notyfService.Error("Không tìm thấy sản phẩm.");
+            }
+            return RedirectToAction(nameof(Index));
         }
 
         private bool SanPhamExists(int id)
         {
             return _context.SanPhams.Any(e => e.MaSp == id);
         }
+
     }
 }

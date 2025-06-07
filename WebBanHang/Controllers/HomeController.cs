@@ -30,6 +30,7 @@ namespace WebBanHang.Controllers
 
             // Phân trang cho tab "Tất cả"
             var lsProductsQuery = _context.SanPhams.AsNoTracking()
+                .Where(p => p.DaXoa == false)
                 .OrderByDescending(x => x.MaSp);
             int pageSize = 8;
             int pageNumber = (page ?? 1);
@@ -56,7 +57,7 @@ namespace WebBanHang.Controllers
 
                 // Lấy truy vấn sản phẩm theo danh mục
                 var lsCategoryProductsQuery = _context.SanPhams.AsNoTracking()
-                    .Where(x => x.MaLoai == item.MaLoai)
+                    .Where(x => x.MaLoai == item.MaLoai && x.DaXoa == false)
                     .OrderByDescending(x => x.MaSp);
                 var productCount = lsCategoryProductsQuery.Count();
 

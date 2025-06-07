@@ -110,6 +110,8 @@
                             <!-- Thêm input hidden cho sort -->
                             <input type="hidden" name="sort" value="@ViewBag.Sort" />
                             <!-- Thanh tìm kiếm đã được loại bỏ khỏi vị trí này -->
+                            <input type="hidden" name="searchKey" value="@ViewBag.SearchKey"/>
+
                             <div class="widgets-searchbox mb-9">
 
                             </div>
@@ -321,74 +323,224 @@
 <!-- Main Content Area End Here -->
 @section Scripts {
     <script>
-        $(document).ready(function () {
-            // Khởi tạo NiceSelect
-            $('#sort_pros').niceSelect();
+    
+$(document).ready(function () {
+    // Khởi tạo NiceSelect
+    $('#sort_pros').niceSelect();
 
-            // Cập nhật trạng thái NiceSelect dựa trên giá trị đã chọn
-            var sortValue = $('#sort_pros').val();
-            $('#sort_pros').val(sortValue).niceSelect('update');
+    // Cập nhật trạng thái NiceSelect dựa trên giá trị đã chọn
+    var sortValue = $('#sort_pros').val();
+    $('#sort_pros').val(sortValue).niceSelect('update');
 
-            // Add to cart
-            function loadHeaderCart() {
-                $("#miniCart").load("/AjaxContent/HeaderCart");
-                $("#numberCart").load("/AjaxContent/NumberCart");
+    // Add to cart
+    function loadHeaderCart() {
+        $("#miniCart").load("/AjaxContent/HeaderCart");
+        $("#numberCart").load("/AjaxContent/NumberCart");
+    }
+
+    $(".add-to-cart").click(function () {
+        var productid = $(this).children('#MaSp').val();
+        var soLuong = $(this).closest('.product-item').find('#txtsoLuong').val() || 1;
+
+        $.ajax({
+            url: '/api/cart/add',
+            dataType: "json",
+            type: "POST",
+            data: {
+                productID: productid,
+                amount: soLuong
+            },
+            success: function (response) {
+                loadHeaderCart();
+                alert("Sản phẩm đã được thêm vào giỏ hàng!");
+                location.reload();
+            },
+            error: function (error) {
+                alert("Lỗi! " + error.responseText);
             }
+        });
+    });
 
-            $(".add-to-cart").click(function () {
-                var productid = $(this).children('#MaSp').val();
-                var soLuong = $(this).closest('.product-item').find('#txtsoLuong').val() || 1;
+    // Sắp xếp: tự động gửi form khi thay đổi và lưu trạng thái
+    $("#sort_pros").change(function () {
+        var sortValue = $(this).val();
+        console.log("Selected sort value: " + sortValue);
 
-                $.ajax({
-                    url: '/api/cart/add',
-                    dataType: "json",
-                    type: "POST",
-                    data: {
-                        productID: productid,
-                        amount: soLuong
-                    },
-                    success: function (response) {
-                        loadHeaderCart();
-                        alert("Sản phẩm đã được thêm vào giỏ hàng!");
-                        location.reload();
-                    },
-                    error: function (error) {
-                        alert("Lỗi! " + error.responseText);
-                    }
-                });
-            });
+        // Cập nhật giá trị sort vào input hidden trong form
+        $("input[name='sort']").val(sortValue);
+        
+        // Lưu trạng thái vào sessionStorage
+        sessionStorage.setItem('filterState', JSON.stringify({
+            sort: sortValue,
+            searchKey: $("input[name='searchKey']").val(),
+            priceRange: $("input[name='priceRange']:checked").val(),
+            minPrice: $("input[name='minPrice']").val(),
+            maxPrice: $("input[name='maxPrice']").val()
+        }));
+        
+        $("#filterForm").submit();
+    });
 
-            // Sắp xếp: tự động gửi form khi thay đổi
-                          $("#sort_pros").change(function () {
-            var sortValue = $(this).val();
-            console.log("Selected sort value: " + sortValue);
+    // Xử lý form filter và lưu trạng thái
+    $("#filterForm").submit(function (e) {
+        var formData = $(this).serialize();
+        console.log("Form data being submitted: " + formData);
 
-            // Cập nhật giá trị sort vào input hidden trong form
-            $("input[name='sort']").val(sortValue);
+        var minPrice = $("input[name='minPrice']").val();
+        var maxPrice = $("input[name='maxPrice']").val();
+
+        if (minPrice && maxPrice) {
+            if (parseFloat(minPrice) < 0 || parseFloat(maxPrice) < 0) {
+                alert("Giá trị không được âm!");
+                e.preventDefault();
+                return false;
+            }
+            if (parseFloat(minPrice) > parseFloat(maxPrice)) {
+                alert("Giá tối thiểu không được lớn hơn giá tối đa!");
+                e.preventDefault();
+                return false;
+            }
+        }
+
+        // Lưu trạng thái filter trước khi submit
+        sessionStorage.setItem('filterState', JSON.stringify({
+            sort: $("input[name='sort']").val(),
+            searchKey: $("input[name='searchKey']").val(),
+            priceRange: $("input[name='priceRange']:checked").val(),
+            minPrice: minPrice,
+            maxPrice: maxPrice
+        }));
+    });
+
+    // Xử lý nút tìm kiếm
+    $(".widgets-searchbox-btn").click(function(e) {
+        e.preventDefault();
+        var searchValue = $(".widgets-searchbox .input-field").val();
+        $("input[name='searchKey']").val(searchValue);
+        $("#filterForm").submit();
+    });
+
+    // Xử lý khi nhấn Enter trong ô tìm kiếm
+    $(".widgets-searchbox .input-field").keypress(function(e) {
+        if (e.which == 13) {
+            e.preventDefault();
+            var searchValue = $(this).val();
+            $("input[name='searchKey']").val(searchValue);
             $("#filterForm").submit();
-        });
+        }
+    });
 
-            // Debug form data
-            $("#filterForm").submit(function (e) {
-                var formData = $(this).serialize();
-                console.log("Form data being submitted: " + formData);
+    // Xử lý khi thay đổi price range
+    $("input[name='priceRange']").change(function() {
+        // Nếu chọn khoảng giá định sẵn, xóa giá trị custom
+        if ($(this).val() !== 'custom') {
+            $("input[name='minPrice']").val('');
+            $("input[name='maxPrice']").val('');
+        }
+    });
 
-                var minPrice = $("input[name='minPrice']").val();
-                var maxPrice = $("input[name='maxPrice']").val();
+    // Xử lý khi nhập giá custom
+    $("input[name='minPrice'], input[name='maxPrice']").on('input', function() {
+        // Nếu có nhập giá custom, bỏ chọn các radio button khác
+        $("input[name='priceRange']").prop('checked', false);
+    });
 
-                if (minPrice && maxPrice) {
-                    if (parseFloat(minPrice) < 0 || parseFloat(maxPrice) < 0) {
-                        alert("Giá trị không được âm!");
-                        e.preventDefault();
-                        return false;
-                    }
-                    if (parseFloat(minPrice) > parseFloat(maxPrice)) {
-                        alert("Giá tối thiểu không được lớn hơn giá tối đa!");
-                        e.preventDefault();
-                        return false;
-                    }
+    // Xử lý click vào danh mục để giữ trạng thái filter
+    $(".category-link").click(function(e) {
+        e.preventDefault();
+        
+        var categoryId = $(this).data('category');
+        var currentParams = new URLSearchParams();
+        
+        // Lấy các giá trị filter hiện tại
+        var searchKey = $("input[name='searchKey']").val();
+        var sort = $("input[name='sort']").val();
+        var priceRange = $("input[name='priceRange']:checked").val();
+        var minPrice = $("input[name='minPrice']").val();
+        var maxPrice = $("input[name='maxPrice']").val();
+        
+        // Thêm các tham số vào URL nếu có giá trị
+        if (searchKey && searchKey.trim() !== '') {
+            currentParams.set('searchKey', searchKey);
+        }
+        if (sort && sort !== '0') {
+            currentParams.set('sort', sort);
+        }
+        if (priceRange && priceRange !== 'all') {
+            currentParams.set('priceRange', priceRange);
+        }
+        if (minPrice && minPrice.trim() !== '') {
+            currentParams.set('minPrice', minPrice);
+        }
+        if (maxPrice && maxPrice.trim() !== '') {
+            currentParams.set('maxPrice', maxPrice);
+        }
+        
+        // Tạo URL với các tham số
+        var baseUrl = categoryId == 0 ? '/sanpham' : '/sanphams/' + categoryId;
+        var queryString = currentParams.toString();
+        var finalUrl = baseUrl + (queryString ? '?' + queryString : '');
+        
+        console.log("Navigating to:", finalUrl);
+        window.location.href = finalUrl;
+    });
+
+    // Khôi phục trạng thái từ sessionStorage khi tải trang
+    var savedState = sessionStorage.getItem('filterState');
+    if (savedState) {
+        try {
+            var state = JSON.parse(savedState);
+            // Chỉ khôi phục nếu không có tham số trên URL (tức là tải trang mới)
+            if (!window.location.search) {
+                if (state.searchKey) {
+                    $(".widgets-searchbox .input-field").val(state.searchKey);
+                    $("input[name='searchKey']").val(state.searchKey);
                 }
-            });
-        });
+                if (state.priceRange) {
+                    $("input[name='priceRange'][value='" + state.priceRange + "']").prop('checked', true);
+                }
+                if (state.minPrice) {
+                    $("input[name='minPrice']").val(state.minPrice);
+                }
+                if (state.maxPrice) {
+                    $("input[name='maxPrice']").val(state.maxPrice);
+                }
+                if (state.sort) {
+                    $("#sort_pros").val(state.sort).niceSelect('update');
+                    $("input[name='sort']").val(state.sort);
+                }
+            }
+        } catch (e) {
+            console.log("Error parsing saved filter state:", e);
+        }
+    }
+});
     </script>
 }
+<style>
+
+   
+    .widgets-category li a.active,
+    .widgets-category li .category-link.active {
+        background-color: #f8f9fa;
+        border-left: 3px solid red;
+        padding-left: 15px;
+        font-weight: bold;
+        color: red !important;
+    }
+
+    .widgets-category li a:hover,
+    .widgets-category li .category-link:hover {
+        color: red;
+        transition: all 0.3s ease;
+    }
+
+    .widgets-category li {
+        border-bottom: 1px solid #eee;
+    }
+
+        .widgets-category li:last-child {
+            border-bottom: none;
+        }
+
+</style>
