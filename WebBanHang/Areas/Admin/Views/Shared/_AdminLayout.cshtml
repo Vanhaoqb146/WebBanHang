@@ -54,33 +54,46 @@
                     </ul>
                     <ul class="nav-right">
 
-                        <li class="dropdown dropdown-animated scale-left">
-                            <div class="pointer" data-toggle="dropdown">
-                                <div class="m-h-10 m-r-15">
-                                    <i class="anticon font-size-16 anticon-user"></i>
+                        @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                        {
+                            <li class="dropdown dropdown-animated scale-left">
+                                <div class="pointer" data-toggle="dropdown">
+                                    <div class="m-h-10 m-r-15">
+                                        <i class="anticon font-size-16 anticon-user" style="font-size: 50px; color: #333;"></i>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="p-b-15 p-t-20 dropdown-menu pop-profile">
-
-                                <a asp-area="Admin" asp-controller="AccountsAdmin" asp-action="Info" class="dropdown-item d-block p-h-15 p-v-10">
-                                    <div class="d-flex align-items-center justify-content-between">
-                                        <div>
-                                            <i class="anticon opacity-04 font-size-16 anticon-user"></i>
-                                            <span class="m-l-10">Tài khoản</span>
-                                        </div>
-                                        <i class="anticon font-size-10 anticon-right"></i>
+                                <div class="p-b-15 p-t-20 dropdown-menu pop-profile">
+                                    <div class="text-center">
+                                        <h5 class="m-b-0">@User.Identity.Name</h5>
+                                        <p class="m-b-0 font-size-13">Quản trị viên</p>
                                     </div>
-                                </a>
-                                <a asp-area="" asp-controller="Accounts" asp-action="DangXuat" class="dropdown-item d-block p-h-15 p-v-10">
-                                    <div class="d-flex align-items-center justify-content-between">
-                                        <div>
-                                            <i class="anticon opacity-04 font-size-16 anticon-logout"></i>
-                                            <span class="m-l-10">Đăng xuất</span>
+                                    <div class="dropdown-divider"></div>
+                                    <a asp-area="Admin" asp-controller="AccountsAdmin" asp-action="Info" class="dropdown-item d-block p-h-15 p-v-10">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div>
+                                                <i class="anticon opacity-04 font-size-16 anticon-user"></i>
+                                                <span class="m-l-10">Tài khoản</span>
+                                            </div>
+                                            <i class="anticon font-size-10 anticon-right"></i>
                                         </div>
-                                    </div>
-                                </a>
-                            </div>
-                        </li>
+                                    </a>
+                                    <a asp-area="" asp-controller="Accounts" asp-action="DangXuat" class="dropdown-item d-block p-h-15 p-v-10">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div>
+                                                <i class="anticon opacity-04 font-size-16 anticon-logout"></i>
+                                                <span class="m-l-10">Đăng xuất</span>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item p-t-15 p-r-15">
+                                <a class="btn btn-primary btn-sm" asp-area="" asp-controller="Accounts" asp-action="DangNhap">Đăng nhập</a>
+                            </li>
+                        }
 
                     </ul>
                 </div>

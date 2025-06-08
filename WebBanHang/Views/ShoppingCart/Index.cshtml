@@ -43,7 +43,7 @@
                                             {
                                                 <tr>
                                                     <td class="product_remove">
-                                                        <input type="button" value="X" class="removecart btn btn-primary" data-mahh="@item.product.MaSp"/>
+                                                        <input type="button" value="X" class="removecart btn btn-primary" data-mahh="@item.product.MaSp" />
                                                     </td>
                                                     <td class="product-thumbnail" height="100px">
                                                         <a href="javascript:void(0)">
@@ -60,7 +60,6 @@
                                                     <td class="product-subtotal"><span class="amount">@item.TotalMoney.ToString("#,##0")</span></td>
                                                 </tr>
                                             }
-
                                         }
                                     </tbody>
                                 </table>
@@ -69,7 +68,6 @@
                                 <div class="col-12">
                                     <div class="coupon-all">
                                         <div class="coupon">
-                                            
                                         </div>
                                         <div class="coupon2">
                                             <a href="cart" class="btn btn-secondary btn-primary-hover">Cập nhật</a>
@@ -83,8 +81,8 @@
                                     <div class="cart-page-total">
                                         <h4 style="font-family:Verdana">Tổng đơn hàng</h4>
                                         <ul>
-                                            
-                                            <li>Tổng <span>@Model.Sum(x=>x.TotalMoney).ToString("#,##0") đ</span></li>
+
+                                            <li>Tổng <span>@Model.Sum(x => x.TotalMoney).ToString("#,##0") đ</span></li>
 
                                         </ul>
                                         @if (User.Identity.IsAuthenticated)
@@ -113,7 +111,7 @@
     </div>
 </main>
 <!-- Main Content Area End Here -->
-@section Scripts{
+@section Scripts {
     <script>
         $(function () {
             function loadHeaderCart() {
@@ -125,25 +123,60 @@
                 var productid = $(this).attr("data-mahh");
                 var soLuong = parseInt($(this).val());
 
-                $.ajax({
-                    url: '/api/cart/update',
-                    datatype: "json",
-                    type: "POST",
-                    data: {
-                        productID: productid,
-                        amount: soLuong
-                    },
-                    success: function (result) {
-                        if (result.success){
-                            loadHeaderCart();
-                            window.location = 'cart';
-                            
-                        }
-                    },
-                    error: function (error) {
-                        alert("Lỗi cập nhật: " + error.responseText);
+                if(soLuong < 0){
+                    alert("Số lượng không thể nhỏ hơn 0");
+                    location.reload();
+                }
+                else if(soLuong == 0){
+                    if (confirm("Xác nhận xóa sản phẩm này?")) {
+                        $.ajax({
+                            url: '/api/cart/remove',
+                            datatype: "json",
+                            type: "POST",
+                            data: {
+                                productID: productid,
+                            },
+                            success: function (result) {
+                                if (result.success) {
+                                    loadHeaderCart();
+                                    window.location = 'cart';
+                                }
+                            },
+                            error: function (error) {
+                                alert("Lỗi xóa: " + error.responseText);
+                            }
+                        });
                     }
-                });
+                    else{
+                        location.reload();
+                    }
+                }
+                else{
+                    $.ajax({
+                        url: '/api/cart/update',
+                        datatype: "json",
+                        type: "POST",
+                        data: {
+                            productID: productid,
+                            amount: soLuong
+                        },
+                        success: function (result) {
+                            if (result.success) {
+                                loadHeaderCart();
+                                window.location = 'cart';
+
+                            }
+                            else if (!result.success) {
+                                alert(result.message ? result.message : "Vui lòng liên hệ người bán hàng!");
+                                loadHeaderCart();
+                                window.location = 'cart';
+                            }
+                        },
+                        error: function (error) {
+                            alert("Lỗi cập nhật: " + error.responseText);
+                        }
+                    });
+                }
             });
             $(".removecart").click(function () {
                 var productid = $(this).attr("data-mahh");

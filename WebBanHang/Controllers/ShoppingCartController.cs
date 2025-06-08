@@ -94,13 +94,9 @@ namespace WebBanHang.Controllers
                     //
                     if (item != null && amount.HasValue)
                     {
-                        if (amount.Value >= hh.SoLuongCo)
+                        if (amount.Value > hh.SoLuongCo)
                         {
-                            item.amount = (int)hh.SoLuongCo;
-                        }
-                        else if (amount.Value <= 0)
-                        {
-                            item.amount = 1;
+                            return Json(new { success = false, message = "Số lượng sản phẩm lớn hơn đang có. Quý khác vui lòng liên hệ bộ phận CSKH để được tư vấn thêm!" });
                         }
                         else
                         {

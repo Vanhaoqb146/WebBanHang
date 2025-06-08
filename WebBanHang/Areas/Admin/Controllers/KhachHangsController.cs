@@ -25,47 +25,48 @@ namespace WebBanHang.Areas.Admin.Controllers
         }
 
         // GET: Admin/KhachHangs
-        public async Task<IActionResult> Index(int page = 1, int TrangThai = -1)
+        // SỬA LẠI ACTION INDEX
+        public async Task<IActionResult> Index(int page = 1, int TrangThai = -1, string searchKey = null)
         {
             var taikhoanID = HttpContext.Session.GetString("AdminId");
             if (string.IsNullOrEmpty(taikhoanID))
             {
-                return RedirectToAction("DangNhap", "AccountsAdmin");
+                return RedirectToAction("DangNhap", "Accounts", new { Area = "" });
             }
 
             var pageNumber = page;
             var pageSize = 10;
 
-            List<KhachHang> lsKH = new List<KhachHang>();
+            IQueryable<KhachHang> query = _context.KhachHangs.AsNoTracking();
 
-            //filter op
+            // Lọc theo trạng thái
             if (TrangThai != -1)
             {
-                lsKH = _context.KhachHangs
-                .AsNoTracking()
-                .Where(x => x.Khoa == Convert.ToBoolean(TrangThai))
-                .OrderByDescending(x => x.MaKh).ToList();
-            }
-            else
-            {
-                lsKH = _context.KhachHangs
-                .AsNoTracking()
-                .OrderByDescending(x => x.MaKh).ToList();
+                bool isKhoa = Convert.ToBoolean(TrangThai);
+                query = query.Where(x => x.Khoa == isKhoa);
             }
 
-            //page
+            // Tìm kiếm
+            if (!string.IsNullOrEmpty(searchKey))
+            {
+                query = query.Where(x => x.Email.Contains(searchKey) || x.Sdt.Contains(searchKey) || x.TenKh.Contains(searchKey));
+            }
+
+            var lsKH = await query.OrderByDescending(x => x.MaKh).ToListAsync();
             PagedList<KhachHang> models = new PagedList<KhachHang>(lsKH.AsQueryable(), pageNumber, pageSize);
 
-
+            // Giữ lại trạng thái lọc
             ViewBag.CurrentPage = pageNumber;
             ViewBag.CurrentTrangThai = TrangThai;
+            ViewBag.CurrentSearchKey = searchKey;
 
-            //filter
-            List<SelectListItem> lsBlock = new List<SelectListItem>();
-            lsBlock.Add(new SelectListItem() { Text = "Hoạt động", Value = "0" });
-            lsBlock.Add(new SelectListItem() { Text = "Khóa", Value = "1" });
-            ViewData["lsTrangThai"] = lsBlock;
-
+            // Tạo danh sách cho dropdown
+            ViewData["lsTrangThai"] = new List<SelectListItem>
+            {
+                new SelectListItem { Text = "Tất cả", Value = "-1" },
+                new SelectListItem { Text = "Hoạt động", Value = "0" },
+                new SelectListItem { Text = "Khóa", Value = "1" }
+            };
 
             return View(models);
         }
@@ -101,27 +102,6 @@ namespace WebBanHang.Areas.Admin.Controllers
             return View(khachHang);
         }
 
-        // GET: Admin/KhachHangs/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Admin/KhachHangs/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("MaKh,TenKh,Email,Sdt,MatKhau,DiaChi,Khoa")] KhachHang khachHang)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(khachHang);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(khachHang);
-        }
 
 
         public string getLocation(string maxa, string maqh, string matp)
@@ -146,110 +126,38 @@ namespace WebBanHang.Areas.Admin.Controllers
             }
             return string.Empty;
         }
-        public async Task<IActionResult> Khoa(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var khachHang = await _context.KhachHangs.FindAsync(id);
-            if (khachHang == null)
-            {
-                return NotFound();
-            }
-            string fullAddress = $"{khachHang.DiaChi}, {getLocation(khachHang.Maxa, khachHang.Maqh, khachHang.Matp)}";
-            ViewBag.FullAddress = fullAddress;
-            return View(khachHang);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Khoa(int id, [Bind("MaKh,TenKh,Email,Sdt,MatKhau,DiaChi,Khoa")] KhachHang khachHang)
-        {
-            if (id != khachHang.MaKh)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    khachHang.Khoa = true;
-                    _context.Update(khachHang);
-                    await _context.SaveChangesAsync();
-                    _notyfService.Success("Khóa thành công");
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!KhachHangExists(khachHang.MaKh))
-                    {
-                        _notyfService.Warning("Có lỗi khi khóa");
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(khachHang);
-        }
 
 
-
-
-        // GET: Admin/KhachHangs/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var khachHang = await _context.KhachHangs.FindAsync(id);
-            if (khachHang == null)
-            {
-                return NotFound();
-            }
-            return View(khachHang);
-        }
-
-        // POST: Admin/KhachHangs/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // THÊM ACTION TOGGLESTATUS MỚI
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("MaKh,TenKh,Email,Sdt,MatKhau,DiaChi,Khoa")] KhachHang khachHang)
+        public async Task<IActionResult> ToggleStatus(int id)
         {
-            if (id != khachHang.MaKh)
+            var khachHang = await _context.KhachHangs.FindAsync(id);
+            if (khachHang == null)
             {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(khachHang);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!KhachHangExists(khachHang.MaKh))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _notyfService.Error("Không tìm thấy khách hàng");
                 return RedirectToAction(nameof(Index));
             }
-            return View(khachHang);
+
+            try
+            {
+                khachHang.Khoa = !khachHang.Khoa;
+                _context.Update(khachHang);
+                await _context.SaveChangesAsync();
+                _notyfService.Success("Thay đổi trạng thái thành công!");
+            }
+            catch
+            {
+                _notyfService.Error("Có lỗi xảy ra khi thay đổi trạng thái.");
+            }
+
+            return RedirectToAction(nameof(Index));
         }
+
+
+
+
 
         // GET: Admin/KhachHangs/Delete/5
         public async Task<IActionResult> Delete(int? id)

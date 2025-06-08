@@ -117,40 +117,47 @@ namespace WebBanHang.Areas.Admin.Controllers
         }
 
         // POST: Admin/Shippers/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("MaShipper,TenShipper,Email,Sdt,MatKhau,LoaiXe,BienSo,Salt")] Shipper shipper)
+        public async Task<IActionResult> Edit(int id, Shipper shipper)
         {
-            if (id != shipper.MaShipper)
-            {
-                return NotFound();
-            }
+            if (id != shipper.MaShipper) return NotFound();
+
+            // Bỏ qua việc kiểm tra mật khẩu và salt trong ModelState
+            // vì chúng không được gửi lên từ form này
+            ModelState.Remove("MatKhau");
+            ModelState.Remove("Salt");
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(shipper);
+                    var shipperToUpdate = await _context.Shippers.FindAsync(id);
+                    if (shipperToUpdate == null)
+                    {
+                        _notyfService.Error("Không tìm thấy Shipper");
+                        return RedirectToAction(nameof(Index));
+                    }
+
+                    // Cập nhật các trường được phép thay đổi
+                    shipperToUpdate.TenShipper = shipper.TenShipper;
+                    shipperToUpdate.LoaiXe = shipper.LoaiXe;
+                    shipperToUpdate.BienSo = shipper.BienSo;
+                    shipperToUpdate.TenHt = shipper.TenShipper + " - " + shipperToUpdate.Sdt;
+
                     await _context.SaveChangesAsync();
                     _notyfService.Success("Cập nhật thành công");
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ShipperExists(shipper.MaShipper))
-                    {
-                        _notyfService.Warning("Cập nhật thất bại");
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    if (!ShipperExists(shipper.MaShipper)) return NotFound();
+                    else throw;
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(shipper);
+            // Nếu ModelState không hợp lệ (sau khi đã bỏ qua MatKhau), trả về view với dữ liệu cũ
+            var originalShipper = await _context.Shippers.AsNoTracking().FirstOrDefaultAsync(s => s.MaShipper == id);
+            return View(originalShipper);
         }
 
         // GET: Admin/Shippers/Delete/5
@@ -171,27 +178,41 @@ namespace WebBanHang.Areas.Admin.Controllers
             return View(shipper);
         }
 
-        // POST: Admin/Shippers/Delete/5
-        [HttpPost, ActionName("Delete")]
+        // POST: Admin/Shippers/ToggleStatus/5
+        // Đổi tên Action từ DeleteConfirmed thành ToggleStatus cho rõ nghĩa
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> ToggleStatus(int id)
         {
+            var shipper = await _context.Shippers.FindAsync(id);
+            if (shipper == null)
+            {
+                return NotFound();
+            }
+
             try
             {
-                var shipper = await _context.Shippers.FindAsync(id);
+                // Logic chuyển đổi trạng thái
+                shipper.Khoa = !shipper.Khoa; // Lật ngược giá trị boolean (true -> false, false -> true)
 
-                shipper.Khoa = true;
                 _context.Update(shipper);
                 await _context.SaveChangesAsync();
-                _notyfService.Success("Khóa thành công");
-                return RedirectToAction(nameof(Index));
+
+                if (shipper.Khoa == true)
+                {
+                    _notyfService.Success("Đã khóa tài khoản Shipper thành công.");
+                }
+                else
+                {
+                    _notyfService.Success("Đã mở khóa tài khoản Shipper thành công.");
+                }
             }
             catch
             {
-                _notyfService.Warning("Khóa thất bại");
-                return RedirectToAction(nameof(Index));
+                _notyfService.Error("Có lỗi xảy ra khi thay đổi trạng thái.");
             }
-            
+
+            return RedirectToAction(nameof(Index));
         }
 
         private bool ShipperExists(int id)
